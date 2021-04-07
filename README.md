@@ -1,4 +1,4 @@
-# LibsodiumBinding
+# ASodium
 Creating Bindings for libsodium in C# 
 
 The following code that I uploaded here will be used for my upcoming C# project if it ever gets approved.
