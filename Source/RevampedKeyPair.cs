@@ -63,12 +63,16 @@ namespace ASodium
 
         private void _ProtectKey()
         {
-            ProtectedMemory.Protect(_privateKey, MemoryProtectionScope.SameProcess);
+            #if NET461
+                ProtectedMemory.Protect(_privateKey, MemoryProtectionScope.SameProcess);
+            #endif
         }
 
         private void _UnprotectKey()
         {
-            ProtectedMemory.Unprotect(_privateKey, MemoryProtectionScope.SameProcess);
+            #if NET461
+                ProtectedMemory.Unprotect(_privateKey, MemoryProtectionScope.SameProcess);
+            #endif
         }
     }
 }
