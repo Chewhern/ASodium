@@ -1,8 +1,8 @@
 # ASodium
-Creating Bindings for libsodium in C# 
+This is a libsodium binding that forked from Sodium.Core
 
-The following code that I uploaded here will be used for my upcoming C# project if it ever gets approved.
+Without any pre-contributors in .Net, this binding wouldn't exist.
 
-I would also like people to contribute to this binding if they found any bugs..
+To verify the DLL downloaded from Nuget, developer are advised to verify the DLL through the signed dll file in github.
 
-If this binding successfully built, will be publish to nuget.
+This is a new binding, there'll be unforeseen bugs please report to me and I'll see what I can do.
