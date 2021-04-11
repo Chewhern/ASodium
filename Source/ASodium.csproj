@@ -14,7 +14,7 @@
     <RepositoryUrl>https://github.com/Chewhern/ASodium</RepositoryUrl>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <OutputType>Library</OutputType>
-    <PackageProjectUrl>https://github.com/Chewhern/ASodium</PackageProjectUrl>
+    <PackageIconUrl>http://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Salt_shaker_on_white_background.jpg/220px-Salt_shaker_on_white_background.jpg</PackageIconUrl>
     <icon>Salt.jpg</icon>
     <PreserveCompilationContext>true</PreserveCompilationContext>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
