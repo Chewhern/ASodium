@@ -1,3 +1,11 @@
+Note:\
+But this binding requires developer to put the libsodium.dll library into the exact same directory that the current application work on.\
+
+AES256GCM is not yet tested as my machine does not support it, it can have bugs or not working at all.\
+
+One of the sodium helper API "sodium_increment()" is not yet tested as it requires certain system architecture to work. It can have bugs or not working. \
+Otherwise all the stuffs pretty much tested and work fine.
+
 0.4.0 version \
 -> stable version but >= .Net Framework 4.7.2 does not really supports it
 
