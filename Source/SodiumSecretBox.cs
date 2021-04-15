@@ -6,11 +6,11 @@ namespace ASodium
 {
     public static class SodiumSecretBox
     {
-        private const ulong KEY_BYTES = 32;
+        private const long KEY_BYTES = 32;
         private const int INT_KEY_BYTES = 32;
-        private const ulong NONCE_BYTES = 24;
+        private const long NONCE_BYTES = 24;
         private const int INT_NONCE_BYTES = 24;
-        private const ulong MAC_BYTES = 16;
+        private const long MAC_BYTES = 16;
         private const int INT_MAC_BYTES = 16;
 
         public static Byte[] GenerateSeededKey(Byte[] Seed)
@@ -67,31 +67,6 @@ namespace ASodium
 
             if (Nonce == null || Nonce.Length != INT_NONCE_BYTES)
                 throw new ArgumentException("Error: Nonce must be " + INT_NONCE_BYTES + " bytes in length.");
-
-            //check to see if there are MAC_BYTES of leading nulls, if so, trim.
-            //this is required due to an error in older versions.
-            if (CipherText[0] == 0)
-            {
-                //check to see if trim is needed
-                var trim = true;
-                for (var i = 0; i < INT_MAC_BYTES - 1; i++)
-                {
-                    if (CipherText[i] != 0)
-                    {
-                        trim = false;
-                        break;
-                    }
-                }
-
-                //if the leading MAC_BYTES are null, trim it off before going on.
-                if (trim)
-                {
-                    var temp = new Byte[CipherText.Length - INT_MAC_BYTES];
-                    Array.Copy(CipherText, INT_MAC_BYTES, temp, 0, CipherText.Length - INT_MAC_BYTES);
-
-                    CipherText = temp;
-                }
-            }
 
             Byte[] Message = new Byte[CipherText.Length - INT_MAC_BYTES];
             int result = SodiumSecretBoxLibrary.crypto_secretbox_open_easy(Message, CipherText, CipherText.Length, Nonce, Key);

@@ -9,6 +9,5 @@ namespace ASodium
         public long MACLength { get; set; }
 
         public Byte[] CipherText { get; set; }
-
     }
 }

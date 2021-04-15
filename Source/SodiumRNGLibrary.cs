@@ -18,15 +18,15 @@ namespace ASodium
         internal static extern uint randombytes_random();
 
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern void randombytes_buf(Byte[] buffer, int size);
+        internal static extern void randombytes_buf(Byte[] RNGData, int size);
 
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern void randombytes_buf_deterministic(Byte[] buffer, ulong size, Byte[] Seeds);
+        internal static extern void randombytes_buf_deterministic(Byte[] RNGData, long size, Byte[] Seeds);
 
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
         internal static extern uint randombytes_uniform(uint upperBound);
 
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern void sodium_increment(Byte[] buffer, long length);
+        internal static extern void sodium_increment(Byte[] RNGData, long length);
     }
 }

@@ -17,10 +17,10 @@ namespace ASodium
             return Buffer;
         }
 
-        public static Byte[] GetSeededRandomBytes(ulong Count, Byte[] Seed) 
+        public static Byte[] GetSeededRandomBytes(long Count, Byte[] Seed) 
         {
             var Buffer = new Byte[Count];
-            ulong Checker = 274877766207;
+            long Checker = 274877766207;
             if (Seed.Length == GetSeedBytesValue()) 
             {
                 if (Count <= Checker) 
