@@ -17,3 +17,8 @@ Otherwise all the stuffs pretty much tested and work fine.
 -> due to the problem in 0.5.0 version, SetEnvironmentHelper has a separate class now\
 -> XChaChaPoly1305 in libsodium's secretbox was added\
 -> minor adjustments to the ASodium binding on SecretBox and RNG. 
+
+0.5.2 version(Incoming updates)\
+-> Removed unnecessary code\
+-> Added some helper\
+-> Added some usability
