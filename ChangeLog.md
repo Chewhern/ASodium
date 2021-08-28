@@ -21,4 +21,5 @@ Otherwise all the stuffs pretty much tested and work fine.
 0.5.2 version(Incoming updates)\
 -> Removed unnecessary code\
 -> Added some helper\
--> Added some usability
+-> Added some usability\
+-> Added Salsa20Poly1305,ChaCha20Poly1305 and ChaCha20IETFPoly1305 in SodiumSecretBox
