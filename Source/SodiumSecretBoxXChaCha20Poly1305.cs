@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Security.Cryptography;
+using System.Runtime.InteropServices;
 
 namespace ASodium
 {
@@ -22,15 +23,6 @@ namespace ASodium
             return SodiumSecretBoxXChaCha20Poly1305Library.crypto_secretbox_xchacha20poly1305_macbytes();
         }
 
-        public static Byte[] GenerateSeededKey(Byte[] Seed)
-        {
-            Byte[] Key = new Byte[] { };
-
-            Key = SodiumRNG.GetSeededRandomBytes((long)GetKeyBytesLength(), Seed);
-
-            return Key;
-        }
-
         public static Byte[] GenerateKey()
         {
             Byte[] Key = new Byte[GetKeyBytesLength()];
@@ -45,12 +37,7 @@ namespace ASodium
             return SodiumRNG.GetRandomBytes(GetNonceBytesLength());
         }
 
-        public static Byte[] GenerateSeededNonce(Byte[] Seed)
-        {
-            return SodiumRNG.GetSeededRandomBytes((long)GetNonceBytesLength(), Seed);
-        }
-
-        public static Byte[] Create(Byte[] Message, Byte[] Nonce, Byte[] Key)
+        public static Byte[] Create(Byte[] Message, Byte[] Nonce, Byte[] Key, Boolean ClearKey = false)
         {
             if (Key == null || Key.Length != GetKeyBytesLength())
             {
@@ -66,10 +53,16 @@ namespace ASodium
             if (result != 0)
                 throw new CryptographicException("Failed to create SecretBox");
 
+            if (ClearKey == true)
+            {
+                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.Length);
+                MyGeneralGCHandle.Free();
+            }
             return CipherText;
         }
 
-        public static Byte[] Open(Byte[] CipherText, Byte[] Nonce, Byte[] Key)
+        public static Byte[] Open(Byte[] CipherText, Byte[] Nonce, Byte[] Key, Boolean ClearKey = false)
         {
             if (Key == null || Key.Length != GetKeyBytesLength())
                 throw new ArgumentException("Error: Key must be " + GetKeyBytesLength() + " bytes in length.");
@@ -82,16 +75,22 @@ namespace ASodium
 
             if (result != 0)
                 throw new CryptographicException("Failed to open SecretBox");
+            if (ClearKey == true)
+            {
+                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.Length);
+                MyGeneralGCHandle.Free();
+            }
 
             return Message;
         }
 
-        public static DetachedBox CreateDetached(String Message, Byte[] Nonce, Byte[] Key)
+        public static DetachedBox CreateDetached(String Message, Byte[] Nonce, Byte[] Key, Boolean ClearKey = false)
         {
-            return CreateDetached(Encoding.UTF8.GetBytes(Message), Nonce, Key);
+            return CreateDetached(Encoding.UTF8.GetBytes(Message), Nonce, Key,ClearKey);
         }
 
-        public static DetachedBox CreateDetached(Byte[] Message, Byte[] Nonce, Byte[] Key)
+        public static DetachedBox CreateDetached(Byte[] Message, Byte[] Nonce, Byte[] Key, Boolean ClearKey = false)
         {
             if (Key == null || Key.Length != GetKeyBytesLength())
             {
@@ -106,16 +105,22 @@ namespace ASodium
             int result = SodiumSecretBoxXChaCha20Poly1305Library.crypto_secretbox_xchacha20poly1305_detached(CipherText, MAC, Message, Message.Length, Nonce, Key);
             if (result != 0)
                 throw new CryptographicException("Failed to create detached SecretBox");
+            if (ClearKey == true)
+            {
+                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.Length);
+                MyGeneralGCHandle.Free();
+            }
 
             return new DetachedBox(CipherText, MAC);
         }
 
-        public static Byte[] OpenDetached(DetachedBox detached, Byte[] Nonce, Byte[] Key)
+        public static Byte[] OpenDetached(DetachedBox detached, Byte[] Nonce, Byte[] Key,Boolean ClearKey=false)
         {
-            return OpenDetached(detached.CipherText, detached.Mac, Nonce, Key);
+            return OpenDetached(detached.CipherText, detached.Mac, Nonce, Key,ClearKey);
         }
 
-        public static Byte[] OpenDetached(Byte[] CipherText, Byte[] MAC, Byte[] Nonce, Byte[] Key)
+        public static Byte[] OpenDetached(Byte[] CipherText, Byte[] MAC, Byte[] Nonce, Byte[] Key,Boolean ClearKey=false)
         {
             if (Key == null || Key.Length != GetKeyBytesLength())
             {
@@ -135,6 +140,12 @@ namespace ASodium
 
             if (result != 0)
                 throw new CryptographicException("Failed to open detached SecretBox");
+            if (ClearKey == true)
+            {
+                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.Length);
+                MyGeneralGCHandle.Free();
+            }
 
             return Message;
         }

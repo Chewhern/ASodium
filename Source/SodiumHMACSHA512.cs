@@ -55,7 +55,7 @@ namespace ASodium
             }
         }
 
-        public static Byte[] ComputeMAC(Byte[] Message, Byte[] Key)
+        public static Byte[] ComputeMAC(Byte[] Message, Byte[] Key, Boolean ClearKey = false)
         {
             if (Message == null)
             {
@@ -80,10 +80,17 @@ namespace ASodium
                 throw new CryptographicException("Failed to compute MAC using HMACSHA256");
             }
 
+            if (ClearKey == true) 
+            {
+                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.LongLength);
+                MyGeneralGCHandle.Free();
+            }
+
             return ComputedMAC;
         }
 
-        public static Boolean VerifyMAC(Byte[] MAC, Byte[] Message, Byte[] Key)
+        public static Boolean VerifyMAC(Byte[] MAC, Byte[] Message, Byte[] Key, Boolean ClearKey = false)
         {
             if (Message == null)
             {
@@ -113,9 +120,12 @@ namespace ASodium
             }
             int result = SodiumHMACSHA512Library.crypto_auth_hmacsha512_verify(MAC, Message, Message.LongLength, Key);
 
-            GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.LongLength);
-            MyGeneralGCHandle.Free();
+            if (ClearKey == true) 
+            {
+                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.LongLength);
+                MyGeneralGCHandle.Free();
+            }
 
             if (result != 0)
             {

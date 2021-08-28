@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Security.Cryptography;
+using System.Runtime.InteropServices;
 
 namespace ASodium
 {
@@ -43,7 +44,7 @@ namespace ASodium
             return Key;
         }
 
-        public static Byte[] Encrypt(Byte[] Message, Byte[] NoncePublic, Byte[] Key, Byte[] AdditionalData = null, Byte[] NonceSecurity=null) 
+        public static Byte[] Encrypt(Byte[] Message, Byte[] NoncePublic, Byte[] Key, Byte[] AdditionalData = null, Byte[] NonceSecurity=null,Boolean ClearKey=false) 
         {
             Byte[] CipherText = new Byte[Message.LongLength+GetABytesLength()];
             long CipherTextLength = 0;
@@ -55,6 +56,13 @@ namespace ASodium
                 throw new ArgumentException("Error: Public nonce must be " + GetNoncePublicLength() + " bytes in length");
             if (AdditionalData != null && (AdditionalData.Length > GetABytesLength() || AdditionalData.Length < 0))
                 throw new ArgumentException("Error: Additional data must be between 0 and " + GetABytesLength() + " in bytes in length");
+            if (NonceSecurity != null)
+            {
+                if (NonceSecurity.Length != GetNonceSecurityLength())
+                {
+                    throw new ArgumentException("Error: Nonce Security must exactly be " + GetNonceSecurityLength().ToString() + " bytes in length");
+                }
+            }
             if (AdditionalData != null && AdditionalData.Length!=0) 
             {
                 AdditionalDataLength = AdditionalData.LongLength;
@@ -66,10 +74,17 @@ namespace ASodium
                 throw new CryptographicException("Error encrypting message.");
             }
 
+            if (ClearKey == true)
+            {
+                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key,GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.Length);
+                MyGeneralGCHandle.Free();
+            }
+
             return CipherText;
         }
 
-        public static Byte[] Decrypt(Byte[] CipherText,Byte[] NoncePublic,Byte[] Key, Byte[] AdditionalData = null, Byte[] NonceSecurity = null) 
+        public static Byte[] Decrypt(Byte[] CipherText,Byte[] NoncePublic,Byte[] Key, Byte[] AdditionalData = null, Byte[] NonceSecurity = null,Boolean ClearKey=false) 
         {
             Byte[] MessageByte = new Byte[CipherText.LongLength - GetABytesLength()];
             long MessageLength = 0;
@@ -81,6 +96,13 @@ namespace ASodium
                 throw new ArgumentException("Error: Public nonce must be " + GetNoncePublicLength() + " bytes in length");
             if (AdditionalData != null && (AdditionalData.Length > GetABytesLength() || AdditionalData.Length < 0))
                 throw new ArgumentException("Error: Additional data must be between 0 and " + GetABytesLength() + " in bytes in length");
+            if (NonceSecurity != null)
+            {
+                if (NonceSecurity.Length != GetNonceSecurityLength())
+                {
+                    throw new ArgumentException("Error: Nonce Security must exactly be " + GetNonceSecurityLength().ToString() + " bytes in length");
+                }
+            }
             if (AdditionalData != null && AdditionalData.Length != 0)
             {
                 AdditionalDataLength = AdditionalData.LongLength;
@@ -93,10 +115,17 @@ namespace ASodium
                 throw new CryptographicException("Error: Verification of MAC stored in cipher text failed");
             }
 
+            if (ClearKey == true)
+            {
+                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.Length);
+                MyGeneralGCHandle.Free();
+            }
+
             return MessageByte;
         }
 
-        public static ChaCha20Poly1305DetachedBox CreateDetachedBox(Byte[] Message,Byte[] NoncePublic,Byte[] Key,Byte[] NonceSec=null,Byte[] AdditionalData=null) 
+        public static ChaCha20Poly1305DetachedBox CreateDetachedBox(Byte[] Message,Byte[] NoncePublic,Byte[] Key,Byte[] NonceSecurity=null,Byte[] AdditionalData=null,Boolean ClearKey=false) 
         {
             ChaCha20Poly1305DetachedBox MyDetachedBox = new ChaCha20Poly1305DetachedBox();
             Byte[] CipherText = new Byte[Message.LongLength];
@@ -111,13 +140,19 @@ namespace ASodium
                 throw new ArgumentException("Error: Public nonce must be " + GetNoncePublicLength() + " bytes in length");
             if (AdditionalData != null && (AdditionalData.Length > GetABytesLength() || AdditionalData.Length < 0))
                 throw new ArgumentException("Error: Additional data must be between 0 and " + GetABytesLength() + " in bytes in length");
-
+            if (NonceSecurity != null)
+            {
+                if (NonceSecurity.Length != GetNonceSecurityLength())
+                {
+                    throw new ArgumentException("Error: Nonce Security must exactly be " + GetNonceSecurityLength().ToString() + " bytes in length");
+                }
+            }
             if (AdditionalData != null && AdditionalData.Length != 0)
             {
                 AdditionalDataLength = AdditionalData.LongLength;
             }
 
-            int result = SodiumSecretAeadChaCha20Poly1305Library.crypto_aead_chacha20poly1305_encrypt_detached(CipherText, MAC, MACLength, Message, MessageLength, AdditionalData, AdditionalDataLength, NonceSec, NoncePublic, Key);
+            int result = SodiumSecretAeadChaCha20Poly1305Library.crypto_aead_chacha20poly1305_encrypt_detached(CipherText, MAC, MACLength, Message, MessageLength, AdditionalData, AdditionalDataLength, NonceSecurity, NoncePublic, Key);
 
             if (result != 0)
             {
@@ -130,15 +165,22 @@ namespace ASodium
             MyDetachedBox.MAC = MAC;
             MyDetachedBox.MACLength = MACLength;
 
+            if (ClearKey == true)
+            {
+                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.Length);
+                MyGeneralGCHandle.Free();
+            }
+
             return MyDetachedBox;
         }
 
-        public static Byte[] OpenDetachedBox(ChaCha20Poly1305DetachedBox MyDetachedBox, Byte[] NoncePublic, Byte[] Key, Byte[] AdditionalData = null, Byte[] NonceSecurity = null)
+        public static Byte[] OpenDetachedBox(ChaCha20Poly1305DetachedBox MyDetachedBox, Byte[] NoncePublic, Byte[] Key, Byte[] AdditionalData = null, Byte[] NonceSecurity = null,Boolean ClearKey=false)
         {
-            return OpenDetachedBox(MyDetachedBox.CipherText,MyDetachedBox.MAC,NoncePublic,Key,AdditionalData,NonceSecurity);
+            return OpenDetachedBox(MyDetachedBox.CipherText,MyDetachedBox.MAC,NoncePublic,Key,AdditionalData,NonceSecurity,ClearKey);
         }
 
-        public static Byte[] OpenDetachedBox(Byte[] CipherText,Byte[] MAC , Byte[] NoncePublic, Byte[] Key, Byte[] AdditionalData = null, Byte[] NonceSecurity = null) 
+        public static Byte[] OpenDetachedBox(Byte[] CipherText,Byte[] MAC , Byte[] NoncePublic, Byte[] Key, Byte[] AdditionalData = null, Byte[] NonceSecurity = null,Boolean ClearKey=false) 
         {
             Byte[] Message = new Byte[CipherText.LongLength];
             long CipherTextLength = CipherText.LongLength;
@@ -150,7 +192,13 @@ namespace ASodium
                 throw new ArgumentException("Error: Public nonce must be " + GetNoncePublicLength() + " bytes in length");
             if (AdditionalData != null && (AdditionalData.Length > GetABytesLength() || AdditionalData.Length < 0))
                 throw new ArgumentException("Error: Additional data must be between 0 and " + GetABytesLength() + " in bytes in length");
-
+            if (NonceSecurity != null)
+            {
+                if (NonceSecurity.Length != GetNonceSecurityLength())
+                {
+                    throw new ArgumentException("Error: Nonce Security must exactly be " + GetNonceSecurityLength().ToString() + " bytes in length");
+                }
+            }
             if (AdditionalData != null && AdditionalData.Length != 0)
             {
                 AdditionalDataLength = AdditionalData.LongLength;
@@ -161,6 +209,13 @@ namespace ASodium
             if (result == -1)
             {
                 throw new CryptographicException("Error: Verification of MAC stored in cipher text failed");
+            }
+
+            if (ClearKey == true)
+            {
+                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.Length);
+                MyGeneralGCHandle.Free();
             }
 
             return Message;

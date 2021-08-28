@@ -58,7 +58,7 @@ namespace ASodium
             }
         }
 
-        public static Byte[] ComputeHash(Byte[] Message, Byte[] Key) 
+        public static Byte[] ComputeHash(Byte[] Message, Byte[] Key,Boolean ClearKey=false) 
         {
             if (Message == null) 
             {
@@ -85,14 +85,17 @@ namespace ASodium
                 throw new CryptographicException("Error: Failed to compute hash");
             }
 
-            GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.Length);
-            MyGeneralGCHandle.Free();
+            if (ClearKey == true) 
+            {
+                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.Length);
+                MyGeneralGCHandle.Free();
+            }
 
             return ComputedHash;
         }
 
-        public static Byte[] SipHash_2_4ComputeHash(Byte[] Message, Byte[] Key)
+        public static Byte[] SipHash_2_4ComputeHash(Byte[] Message, Byte[] Key,Boolean ClearKey=false)
         {
             if (Message == null)
             {
@@ -119,9 +122,12 @@ namespace ASodium
                 throw new CryptographicException("Error: Failed to compute hash");
             }
 
-            GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.Length);
-            MyGeneralGCHandle.Free();
+            if (ClearKey == true) 
+            {
+                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.Length);
+                MyGeneralGCHandle.Free();
+            }
 
             return ComputedHash;
         }

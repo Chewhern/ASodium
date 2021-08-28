@@ -75,7 +75,7 @@ namespace ASodium
             return NewState;
         }
 
-        public static Byte[] SignFinalState(Byte[] State,Byte[] SecretKey) 
+        public static Byte[] SignFinalState(Byte[] State,Byte[] SecretKey, Boolean ClearKey = false) 
         {
             Byte[] Signature = new Byte[GetSignatureBytesLength()];
             long SignatureLength = 0;
@@ -87,9 +87,12 @@ namespace ASodium
                 throw new CryptographicException("Error: Failed to sign state and create signature");
             }
 
-            GCHandle MyGeneralGCHandle = GCHandle.Alloc(SecretKey, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), SecretKey.Length);
-            MyGeneralGCHandle.Free();
+            if (ClearKey == true) 
+            {
+                GCHandle MyGeneralGCHandle = GCHandle.Alloc(SecretKey, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), SecretKey.Length);
+                MyGeneralGCHandle.Free();
+            }
 
             return Signature;
         }

@@ -41,7 +41,7 @@ namespace ASodium
             return SodiumGenericHashLibrary.crypto_generichash_statebytes();
         }
 
-        public static Byte[] ComputeHash(Byte HashLength,Byte[] Message, Byte[] Key = null) 
+        public static Byte[] ComputeHash(Byte HashLength,Byte[] Message, Byte[] Key = null,Boolean ClearKey=false) 
         {
             if (Message == null) 
             {
@@ -86,9 +86,12 @@ namespace ASodium
 
             if (KeyLength != 0) 
             {
-                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), KeyLength);
-                MyGeneralGCHandle.Free();
+                if (ClearKey==true) 
+                {
+                    GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
+                    SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), KeyLength);
+                    MyGeneralGCHandle.Free();
+                }
             }
 
             return ComputedHash;
@@ -200,7 +203,7 @@ namespace ASodium
             }
         }
 
-        public static Byte[] InitializeState(Byte[] Key, Byte OutLength) 
+        public static Byte[] InitializeState(Byte[] Key, Byte OutLength,Boolean ClearKey=false) 
         {
             Byte[] State = new Byte[GetStateBytesLength()];
 
@@ -244,9 +247,12 @@ namespace ASodium
 
             if (KeyLength != 0)
             {
-                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), KeyLength);
-                MyGeneralGCHandle.Free();
+                if (ClearKey == true) 
+                {
+                    GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
+                    SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), KeyLength);
+                    MyGeneralGCHandle.Free();
+                }
             }
 
             return State;

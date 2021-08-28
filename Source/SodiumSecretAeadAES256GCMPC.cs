@@ -88,7 +88,7 @@ namespace ASodium
             }
         }
 
-        public static Byte[] InitializeState(Byte[] Key) 
+        public static Byte[] InitializeState(Byte[] Key,Boolean ClearKey=false) 
         {
             if (Key == null || Key.Length != GetKeyLength())
                 throw new ArgumentException("Error: Key must be " + GetKeyLength() + " bytes in length");
@@ -100,9 +100,15 @@ namespace ASodium
             {
                 throw new SystemException("Error: Failed to initialized state for AES256 GCM");
             }
-            GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.Length);
-            MyGeneralGCHandle.Free();
+            GCHandle MyGeneralGCHandle;
+
+            if (ClearKey == true) 
+            {
+                MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.Length);
+                MyGeneralGCHandle.Free();
+            }
+
             return StateBytes;
         }
 
@@ -140,7 +146,7 @@ namespace ASodium
             }
         }
 
-        public static Byte[] Encrypt(Byte[] Message, Byte[] NoncePublic, Byte[] StateBytes, Byte[] AdditionalData = null, Byte[] NonceSecurity = null)
+        public static Byte[] Encrypt(Byte[] Message, Byte[] NoncePublic, Byte[] StateBytes, Byte[] AdditionalData = null, Byte[] NonceSecurity = null,Boolean ClearKey=false)
         {
             if (IsAES256GCMAvailable() == false)
             {
@@ -157,15 +163,27 @@ namespace ASodium
                 throw new ArgumentException("Error: Public nonce must be " + GetNoncePublicLength() + " bytes in length");
             if (AdditionalData != null && (AdditionalData.Length > GetABytesLength() || AdditionalData.Length < 0))
                 throw new ArgumentException("Error: Additional data must be between 0 and " + GetABytesLength() + " in bytes in length");
+            if (NonceSecurity != null) 
+            {
+                if (NonceSecurity.Length != GetNonceSecurityLength()) 
+                {
+                    throw new ArgumentException("Error: Nonce Security length must exactly be " + GetNonceSecurityLength().ToString() + " bytes long");
+                }
+            }
             if (AdditionalData != null && AdditionalData.Length != 0)
             {
                 AdditionalDataLength = AdditionalData.LongLength;
             }
             int result = SodiumSecretAeadAES256GCMLibrary.crypto_aead_aes256gcm_encrypt_afternm(CipherText, CipherTextLength, Message, MessageLength, AdditionalData, AdditionalDataLength, NonceSecurity, NoncePublic, StateBytes);
 
-            GCHandle MyGeneralGCHandle = GCHandle.Alloc(StateBytes, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), StateBytes.Length);
-            MyGeneralGCHandle.Free();
+            GCHandle MyGeneralGCHandle;
+
+            if (ClearKey == true) 
+            {
+                MyGeneralGCHandle = GCHandle.Alloc(StateBytes, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), StateBytes.Length);
+                MyGeneralGCHandle.Free();
+            }
 
             if (result != 0)
             {
@@ -174,7 +192,7 @@ namespace ASodium
             return CipherText;
         }
 
-        public static Byte[] Decrypt(Byte[] CipherText, Byte[] NoncePublic, Byte[] StateBytes, Byte[] AdditionalData = null, Byte[] NonceSecurity = null)
+        public static Byte[] Decrypt(Byte[] CipherText, Byte[] NoncePublic, Byte[] StateBytes, Byte[] AdditionalData = null, Byte[] NonceSecurity = null,Boolean ClearKey=false)
         {
             if (IsAES256GCMAvailable() == false)
             {
@@ -191,6 +209,13 @@ namespace ASodium
                 throw new ArgumentException("Error: Public nonce must be " + GetNoncePublicLength() + " bytes in length");
             if (AdditionalData != null && (AdditionalData.Length > GetABytesLength() || AdditionalData.Length < 0))
                 throw new ArgumentException("Error: Additional data must be between 0 and " + GetABytesLength() + " in bytes in length");
+            if (NonceSecurity != null)
+            {
+                if (NonceSecurity.Length != GetNonceSecurityLength())
+                {
+                    throw new ArgumentException("Error: Nonce Security length must exactly be " + GetNonceSecurityLength().ToString() + " bytes long");
+                }
+            }
             if (AdditionalData != null && AdditionalData.Length != 0)
             {
                 AdditionalDataLength = AdditionalData.LongLength;
@@ -198,9 +223,14 @@ namespace ASodium
 
             int result = SodiumSecretAeadAES256GCMLibrary.crypto_aead_aes256gcm_decrypt_afternm(MessageByte, MessageLength, NonceSecurity, CipherText, CipherTextLength, AdditionalData, AdditionalDataLength, NoncePublic, StateBytes);
 
-            GCHandle MyGeneralGCHandle = GCHandle.Alloc(StateBytes, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), StateBytes.Length);
-            MyGeneralGCHandle.Free();
+            GCHandle MyGeneralGCHandle;
+
+            if (ClearKey == true) 
+            {
+                MyGeneralGCHandle = GCHandle.Alloc(StateBytes, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), StateBytes.Length);
+                MyGeneralGCHandle.Free();
+            }
 
             if (result == -1)
             {
@@ -210,7 +240,7 @@ namespace ASodium
             return MessageByte;
         }
 
-        public static AES256GCMDetachedBox CreateDetachedBox(Byte[] Message, Byte[] NoncePublic, Byte[] StateBytes, Byte[] NonceSec = null, Byte[] AdditionalData = null)
+        public static AES256GCMDetachedBox CreateDetachedBox(Byte[] Message, Byte[] NoncePublic, Byte[] StateBytes, Byte[] NonceSecurity = null, Byte[] AdditionalData = null,Boolean ClearKey=false)
         {
             if (IsAES256GCMAvailable() == false)
             {
@@ -230,17 +260,27 @@ namespace ASodium
                 throw new ArgumentException("Error: Public nonce must be " + GetNoncePublicLength() + " bytes in length");
             if (AdditionalData != null && (AdditionalData.Length > GetABytesLength() || AdditionalData.Length < 0))
                 throw new ArgumentException("Error: Additional data must be between 0 and " + GetABytesLength() + " in bytes in length");
-
+            if (NonceSecurity != null)
+            {
+                if (NonceSecurity.Length != GetNonceSecurityLength())
+                {
+                    throw new ArgumentException("Error: Nonce Security length must exactly be " + GetNonceSecurityLength().ToString() + " bytes long");
+                }
+            }
             if (AdditionalData != null && AdditionalData.Length != 0)
             {
                 AdditionalDataLength = AdditionalData.LongLength;
             }
 
-            int result = SodiumSecretAeadAES256GCMLibrary.crypto_aead_aes256gcm_encrypt_detached_afternm(CipherText, MAC, MACLength, Message, MessageLength, AdditionalData, AdditionalDataLength, NonceSec, NoncePublic, StateBytes);
+            int result = SodiumSecretAeadAES256GCMLibrary.crypto_aead_aes256gcm_encrypt_detached_afternm(CipherText, MAC, MACLength, Message, MessageLength, AdditionalData, AdditionalDataLength, NonceSecurity, NoncePublic, StateBytes);
 
-            GCHandle MyGeneralGCHandle = GCHandle.Alloc(StateBytes, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), StateBytes.Length);
-            MyGeneralGCHandle.Free();
+            GCHandle MyGeneralGCHandle;
+            if (ClearKey == true) 
+            {
+                MyGeneralGCHandle = GCHandle.Alloc(StateBytes, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), StateBytes.Length);
+                MyGeneralGCHandle.Free();
+            }
 
             if (result != 0)
             {
@@ -256,17 +296,17 @@ namespace ASodium
             return MyDetachedBox;
         }
 
-        public static Byte[] OpenDetachedBox(AES256GCMDetachedBox MyDetachedBox, Byte[] NoncePublic, Byte[] StateBytes, Byte[] AdditionalData = null, Byte[] NonceSecurity = null)
+        public static Byte[] OpenDetachedBox(AES256GCMDetachedBox MyDetachedBox, Byte[] NoncePublic, Byte[] StateBytes, Byte[] AdditionalData = null, Byte[] NonceSecurity = null,Boolean ClearKey=false)
         {
             if (IsAES256GCMAvailable() == false)
             {
                 throw new SystemException("Error: Accelerated AES256GCM is not supported in this machine..");
             }
 
-            return OpenDetachedBox(MyDetachedBox.CipherText, MyDetachedBox.MAC, NoncePublic, StateBytes, AdditionalData, NonceSecurity);
+            return OpenDetachedBox(MyDetachedBox.CipherText, MyDetachedBox.MAC, NoncePublic, StateBytes, AdditionalData, NonceSecurity,ClearKey);
         }
 
-        public static Byte[] OpenDetachedBox(Byte[] CipherText, Byte[] MAC, Byte[] NoncePublic, Byte[] StateBytes, Byte[] AdditionalData = null, Byte[] NonceSecurity = null)
+        public static Byte[] OpenDetachedBox(Byte[] CipherText, Byte[] MAC, Byte[] NoncePublic, Byte[] StateBytes, Byte[] AdditionalData = null, Byte[] NonceSecurity = null,Boolean ClearKey=false)
         {
             if (IsAES256GCMAvailable() == false)
             {
@@ -283,7 +323,13 @@ namespace ASodium
                 throw new ArgumentException("Error: Public nonce must be " + GetNoncePublicLength() + " bytes in length");
             if (AdditionalData != null && (AdditionalData.Length > GetABytesLength() || AdditionalData.Length < 0))
                 throw new ArgumentException("Error: Additional data must be between 0 and " + GetABytesLength() + " in bytes in length");
-
+            if (NonceSecurity != null)
+            {
+                if (NonceSecurity.Length != GetNonceSecurityLength())
+                {
+                    throw new ArgumentException("Error: Nonce Security length must exactly be " + GetNonceSecurityLength().ToString() + " bytes long");
+                }
+            }
             if (AdditionalData != null && AdditionalData.Length != 0)
             {
                 AdditionalDataLength = AdditionalData.LongLength;
@@ -291,9 +337,14 @@ namespace ASodium
 
             int result = SodiumSecretAeadAES256GCMLibrary.crypto_aead_aes256gcm_decrypt_detached_afternm(Message, NonceSecurity, CipherText, CipherTextLength, MAC, AdditionalData, AdditionalDataLength, NoncePublic, StateBytes);
 
-            GCHandle MyGeneralGCHandle = GCHandle.Alloc(StateBytes, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), StateBytes.Length);
-            MyGeneralGCHandle.Free();
+            GCHandle MyGeneralGCHandle;
+
+            if (ClearKey == true) 
+            {
+                MyGeneralGCHandle = GCHandle.Alloc(StateBytes, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), StateBytes.Length);
+                MyGeneralGCHandle.Free();
+            }
 
             if (result == -1)
             {

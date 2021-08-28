@@ -43,39 +43,6 @@ namespace ASodium
             return MyKeyPair;
         }
 
-        public static RevampedKeyPair GenerateSeededRevampedKeyPair(Byte[] Seed) 
-        {
-            if (Seed == null) 
-            {
-                throw new ArgumentException("Error: Seed must not be null");
-            }
-            else 
-            {
-                if (Seed.Length != GetSeedBytesLength()) 
-                {
-                    throw new ArgumentException("Error: Seed Length must exactly be " + GetSeedBytesLength() + " bytes");
-                }
-            }
-
-            Byte[] PublicKey = new Byte[GetPublicKeyBytesLength()];
-            Byte[] SecretKey = new Byte[GetSecretKeyBytesLength()];
-
-            int result = SodiumKeyExchangeLibrary.crypto_kx_seed_keypair(PublicKey, SecretKey,Seed);
-
-            if (result != 0) 
-            {
-                throw new CryptographicException("Error: Failed to create seeded Key Exchange Revamped Key Pair");
-            }
-
-            GCHandle MyGeneralGCHandle = GCHandle.Alloc(Seed, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Seed.Length);
-            MyGeneralGCHandle.Free();
-
-            RevampedKeyPair MyKeyPair = new RevampedKeyPair(PublicKey, SecretKey);
-
-            return MyKeyPair;
-        }
-
         public static KeyPair GenerateKeyPair()
         {
             Byte[] PublicKey = new Byte[GetPublicKeyBytesLength()];
@@ -110,65 +77,6 @@ namespace ASodium
             else 
             {
                 GCHandle MyGeneralGCHandle = GCHandle.Alloc(PublicKey, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), PublicKey.Length);
-                MyGeneralGCHandle.Free();
-                MyGeneralGCHandle = GCHandle.Alloc(SecretKey, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), SecretKey.Length);
-                MyGeneralGCHandle.Free();
-                return new KeyPair(IntPtr.Zero, 0, IntPtr.Zero, 0);
-            }
-        }
-
-        public static KeyPair GenerateSeededKeyPair(Byte[] Seed)
-        {
-            if (Seed == null)
-            {
-                throw new ArgumentException("Error: Seed must not be null");
-            }
-            else
-            {
-                if (Seed.Length != GetSeedBytesLength())
-                {
-                    throw new ArgumentException("Error: Seed Length must exactly be " + GetSeedBytesLength() + " bytes");
-                }
-            }
-
-            Byte[] PublicKey = new Byte[GetPublicKeyBytesLength()];
-            Byte[] SecretKey = new Byte[GetSecretKeyBytesLength()];
-
-            int result = SodiumKeyExchangeLibrary.crypto_kx_seed_keypair(PublicKey, SecretKey, Seed);
-
-            if (result != 0)
-            {
-                throw new CryptographicException("Error: Failed to create seeded Key Exchange Revamped Key Pair");
-            }
-
-            GCHandle MyGeneralGCHandle = GCHandle.Alloc(Seed, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Seed.Length);
-            MyGeneralGCHandle.Free();
-
-            Boolean IsZero = true;
-            IntPtr PublicKeyIntPtr = SodiumGuardedHeapAllocation.Sodium_Malloc(ref IsZero, PublicKey.Length);
-            Boolean IsZero2 = true;
-            IntPtr SecretKeyIntPtr = SodiumGuardedHeapAllocation.Sodium_Malloc(ref IsZero2, SecretKey.Length);
-
-            if (IsZero == false && IsZero2 == false)
-            {
-                Marshal.Copy(PublicKey, 0, PublicKeyIntPtr, GetPublicKeyBytesLength());
-                SodiumGuardedHeapAllocation.Sodium_MProtect_NoAccess(PublicKeyIntPtr);
-                Marshal.Copy(SecretKey, 0, SecretKeyIntPtr, GetSecretKeyBytesLength());
-                SodiumGuardedHeapAllocation.Sodium_MProtect_NoAccess(SecretKeyIntPtr);
-                MyGeneralGCHandle = GCHandle.Alloc(PublicKey, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), PublicKey.Length);
-                MyGeneralGCHandle.Free();
-                MyGeneralGCHandle = GCHandle.Alloc(SecretKey, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), SecretKey.Length);
-                MyGeneralGCHandle.Free();
-                return new KeyPair(SecretKeyIntPtr, GetSecretKeyBytesLength(), PublicKeyIntPtr, GetPublicKeyBytesLength());
-            }
-            else
-            {
-                MyGeneralGCHandle = GCHandle.Alloc(PublicKey, GCHandleType.Pinned);
                 SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), PublicKey.Length);
                 MyGeneralGCHandle.Free();
                 MyGeneralGCHandle = GCHandle.Alloc(SecretKey, GCHandleType.Pinned);

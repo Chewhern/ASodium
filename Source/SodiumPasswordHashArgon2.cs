@@ -93,7 +93,7 @@ namespace ASodium
             return Salt;
         }
 
-        public static Byte[] Argon2PBKDFCustom(long DerivedKeyLength,Byte[] Password,Byte[] Salt,ulong OpsLimit,long MemLimit,Algorithm algorithm = Algorithm.DEFAULT) 
+        public static Byte[] Argon2PBKDFCustom(long DerivedKeyLength,Byte[] Password,Byte[] Salt,ulong OpsLimit,long MemLimit,Algorithm algorithm = Algorithm.DEFAULT,Boolean ClearKey=false) 
         {
             if (DerivedKeyLength != 0) 
             {
@@ -176,9 +176,12 @@ namespace ASodium
                 result = SodiumPasswordHashArgon2Library.crypto_pwhash(DerivedKey, DerivedKeyLength, Password, Password.LongLength, Salt, OpsLimit, MemLimit, (int)Algorithm.ARGON2ID);
             }
 
-            GCHandle MyGeneralGCHandle = GCHandle.Alloc(Password, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Password.Length);
-            MyGeneralGCHandle.Free();
+            if (ClearKey == true) 
+            {
+                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Password, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Password.Length);
+                MyGeneralGCHandle.Free();
+            }
 
             if (result != 0) 
             {
@@ -188,7 +191,7 @@ namespace ASodium
             return DerivedKey;
         }
 
-        public static IntPtr Argon2PBKDFCustomIntPtr(long DerivedKeyLength, Byte[] Password, Byte[] Salt, ulong OpsLimit, long MemLimit, Algorithm algorithm = Algorithm.DEFAULT)
+        public static IntPtr Argon2PBKDFCustomIntPtr(long DerivedKeyLength, Byte[] Password, Byte[] Salt, ulong OpsLimit, long MemLimit, Algorithm algorithm = Algorithm.DEFAULT,Boolean ClearKey=false)
         {
             if (DerivedKeyLength != 0)
             {
@@ -271,9 +274,14 @@ namespace ASodium
                 result = SodiumPasswordHashArgon2Library.crypto_pwhash(DerivedKey, DerivedKeyLength, Password, Password.LongLength, Salt, OpsLimit, MemLimit, (int)Algorithm.ARGON2ID);
             }
 
-            GCHandle MyGeneralGCHandle = GCHandle.Alloc(Password, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Password.Length);
-            MyGeneralGCHandle.Free();
+            GCHandle MyGeneralGCHandle = new GCHandle();
+
+            if (ClearKey == true) 
+            {
+                MyGeneralGCHandle = GCHandle.Alloc(Password, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Password.Length);
+                MyGeneralGCHandle.Free();
+            }
 
             if (result != 0)
             {
@@ -300,7 +308,7 @@ namespace ASodium
             }
         }
 
-        public static Byte[] Argon2PBKDF(long DerivedKeyLength, Byte[] Password, Byte[] Salt,Strength strength=Strength.MODERATE, Algorithm algorithm = Algorithm.DEFAULT)
+        public static Byte[] Argon2PBKDF(long DerivedKeyLength, Byte[] Password, Byte[] Salt,Strength strength=Strength.MODERATE, Algorithm algorithm = Algorithm.DEFAULT,Boolean ClearKey=false)
         {
             if (DerivedKeyLength != 0)
             {
@@ -364,9 +372,12 @@ namespace ASodium
                 result = SodiumPasswordHashArgon2Library.crypto_pwhash(DerivedKey, DerivedKeyLength, Password, Password.LongLength, Salt, OpsLimit, MemLimit, (int)Algorithm.ARGON2ID);
             }
 
-            GCHandle MyGeneralGCHandle = GCHandle.Alloc(Password, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Password.Length);
-            MyGeneralGCHandle.Free();
+            if (ClearKey == true) 
+            {
+                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Password, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Password.Length);
+                MyGeneralGCHandle.Free();
+            }
 
             if (result != 0)
             {
@@ -376,7 +387,7 @@ namespace ASodium
             return DerivedKey;
         }
 
-        public static IntPtr Argon2PBKDFIntPtr(long DerivedKeyLength, Byte[] Password, Byte[] Salt, Strength strength=Strength.MODERATE, Algorithm algorithm = Algorithm.DEFAULT)
+        public static IntPtr Argon2PBKDFIntPtr(long DerivedKeyLength, Byte[] Password, Byte[] Salt, Strength strength=Strength.MODERATE, Algorithm algorithm = Algorithm.DEFAULT,Boolean ClearKey=false)
         {
             if (DerivedKeyLength != 0)
             {
@@ -440,9 +451,13 @@ namespace ASodium
                 result = SodiumPasswordHashArgon2Library.crypto_pwhash(DerivedKey, DerivedKeyLength, Password, Password.LongLength, Salt, OpsLimit, MemLimit, (int)Algorithm.ARGON2ID);
             }
 
-            GCHandle MyGeneralGCHandle = GCHandle.Alloc(Password, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Password.Length);
-            MyGeneralGCHandle.Free();
+            GCHandle MyGeneralGCHandle = new GCHandle();
+            if (ClearKey == true) 
+            {
+                MyGeneralGCHandle = GCHandle.Alloc(Password, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Password.Length);
+                MyGeneralGCHandle.Free();
+            }
 
             if (result != 0)
             {
@@ -469,7 +484,7 @@ namespace ASodium
             }
         }
 
-        public static String Argon2HashPassword(Byte[] Password,Strength strength=Strength.MODERATE) 
+        public static String Argon2HashPassword(Byte[] Password,Strength strength=Strength.MODERATE,Boolean ClearKey=false) 
         {
             if (Password.LongLength != 0)
             {
@@ -509,16 +524,19 @@ namespace ASodium
                 throw new CryptographicException("Error: Password failed to hash with Argon");
             }
 
-            GCHandle MyGeneralGCHandle = GCHandle.Alloc(Password, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Password.Length);
-            MyGeneralGCHandle.Free();
+            if (ClearKey == true) 
+            {
+                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Password, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Password.Length);
+                MyGeneralGCHandle.Free();
+            }
 
             String HashedPasswordWithParamString = Encoding.UTF8.GetString(HashedPasswordWithParam);
 
             return HashedPasswordWithParamString;
         }
 
-        public static String Argon2CustomParamHashPassword(Byte[] Password, ulong OpsLimit, long MemLimit)
+        public static String Argon2CustomParamHashPassword(Byte[] Password, ulong OpsLimit, long MemLimit,Boolean ClearKey=false)
         {
             if (OpsLimit == 0)
             {
@@ -579,16 +597,19 @@ namespace ASodium
                 throw new CryptographicException("Error: Password failed to hash with Argon");
             }
 
-            GCHandle MyGeneralGCHandle = GCHandle.Alloc(Password, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Password.Length);
-            MyGeneralGCHandle.Free();
+            if (ClearKey == true) 
+            {
+                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Password, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Password.Length);
+                MyGeneralGCHandle.Free();
+            }
 
             String HashedPasswordWithParamString = Encoding.UTF8.GetString(HashedPasswordWithParam);
 
             return HashedPasswordWithParamString;
         }
 
-        public static Boolean VerifyPasswordString(String HashedPasswordWithParamString,Byte[] Password) 
+        public static Boolean VerifyPasswordString(String HashedPasswordWithParamString,Byte[] Password,Boolean ClearKey=false) 
         {
             if (HashedPasswordWithParamString.LongCount() == 0) 
             {
@@ -616,9 +637,12 @@ namespace ASodium
 
             int result = SodiumPasswordHashArgon2Library.crypto_pwhash_str_verify(HashedPasswordWithParamString, Password, Password.LongLength);
 
-            GCHandle MyGeneralGCHandle = GCHandle.Alloc(Password, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Password.LongLength);
-            MyGeneralGCHandle.Free();
+            if (ClearKey == true) 
+            {
+                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Password, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Password.LongLength);
+                MyGeneralGCHandle.Free();
+            }
 
             if (result == 0) 
             {

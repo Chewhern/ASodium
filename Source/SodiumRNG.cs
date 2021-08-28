@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 
 namespace ASodium
 {
@@ -17,7 +18,7 @@ namespace ASodium
             return Buffer;
         }
 
-        public static Byte[] GetSeededRandomBytes(long Count, Byte[] Seed) 
+        public static Byte[] GetSeededRandomBytes(long Count, Byte[] Seed,Boolean ClearKey=false) 
         {
             var Buffer = new Byte[Count];
             long Checker = 274877766207;
@@ -36,6 +37,14 @@ namespace ASodium
             {
                 throw new ArgumentException("Error: Seed length is not equals to "+(GetSeedBytesValue()).ToString());
             }
+
+            if (ClearKey == true) 
+            {
+                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Seed, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Seed.Length);
+                MyGeneralGCHandle.Free();
+            }
+
             return Buffer;
         }
 

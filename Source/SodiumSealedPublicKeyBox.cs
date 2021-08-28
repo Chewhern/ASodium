@@ -40,7 +40,7 @@ namespace ASodium
             return CipherText;
         }
 
-        public static Byte[] Open(Byte[] CipherText,Byte[] CurrentUserPublicKey, Byte[] CurrentUserSecretKey) 
+        public static Byte[] Open(Byte[] CipherText,Byte[] CurrentUserPublicKey, Byte[] CurrentUserSecretKey,Boolean ClearKey=false) 
         {
             if (CipherText == null) 
             {
@@ -85,9 +85,14 @@ namespace ASodium
                 throw new CryptographicException("Error: Failed to open sealed box");
             }
 
-            GCHandle MyGeneralGCHandle = GCHandle.Alloc(CurrentUserSecretKey, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), CurrentUserSecretKey.Length);
-            MyGeneralGCHandle.Free();
+            GCHandle MyGeneralGCHandle;
+
+            if (ClearKey == true) 
+            {
+                MyGeneralGCHandle = GCHandle.Alloc(CurrentUserSecretKey, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), CurrentUserSecretKey.Length);
+                MyGeneralGCHandle.Free();
+            }
 
             return Message;
         }

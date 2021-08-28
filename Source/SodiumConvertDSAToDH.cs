@@ -32,7 +32,7 @@ namespace ASodium
             return X25519PK;
         }
 
-        public static Byte[] ConvertDSASKToDHSK(Byte[] ED25519SK) 
+        public static Byte[] ConvertDSASKToDHSK(Byte[] ED25519SK,Boolean ClearKey=false) 
         {
             if (ED25519SK == null)
             {
@@ -55,14 +55,17 @@ namespace ASodium
                 throw new CryptographicException("Error: Failed to convert ED25519 SK to X25519 PK");
             }
 
-            GCHandle MyGeneralGCHandle = GCHandle.Alloc(ED25519SK, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), ED25519SK.Length);
-            MyGeneralGCHandle.Free();
+            if (ClearKey == true) 
+            {
+                GCHandle MyGeneralGCHandle = GCHandle.Alloc(ED25519SK, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), ED25519SK.Length);
+                MyGeneralGCHandle.Free();
+            }
 
             return X25519SK;
         }
 
-        public static IntPtr ConvertDSASKToDHSKIntPtr(Byte[] ED25519SK)
+        public static IntPtr ConvertDSASKToDHSKIntPtr(Byte[] ED25519SK,Boolean ClearKey)
         {
             if (ED25519SK == null)
             {
@@ -85,9 +88,13 @@ namespace ASodium
                 throw new CryptographicException("Error: Failed to convert ED25519 SK to X25519 PK");
             }
 
-            GCHandle MyGeneralGCHandle = GCHandle.Alloc(ED25519SK, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), ED25519SK.Length);
-            MyGeneralGCHandle.Free();
+            GCHandle MyGeneralGCHandle = new GCHandle();
+            if (ClearKey == true) 
+            {
+                MyGeneralGCHandle = GCHandle.Alloc(ED25519SK, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), ED25519SK.Length);
+                MyGeneralGCHandle.Free();
+            }
 
             Boolean IsZero = true;
             IntPtr X25519SKIntPtr = SodiumGuardedHeapAllocation.Sodium_Malloc(ref IsZero,X25519SK.Length);

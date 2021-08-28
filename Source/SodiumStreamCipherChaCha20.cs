@@ -109,7 +109,7 @@ namespace ASodium
             return Nonce;
         }
 
-        public static Byte[] ChaCha20Encrypt(Byte[] Message, Byte[] Nonce, Byte[] Key) 
+        public static Byte[] ChaCha20Encrypt(Byte[] Message, Byte[] Nonce, Byte[] Key,Boolean ClearKey=false) 
         {
             if (Message == null) 
             {
@@ -153,19 +153,22 @@ namespace ASodium
                 throw new CryptographicException("Failed to encrypt using ChaCha20 stream cipher");
             }
 
-            GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.Length);
-            MyGeneralGCHandle.Free();
+            if (ClearKey == true) 
+            {
+                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.Length);
+                MyGeneralGCHandle.Free();
+            }
 
             return OutPut;
         }
 
-        public static Byte[] ChaCha20Decrypt(Byte[] CipherText,Byte[] Nonce,Byte[] Key) 
+        public static Byte[] ChaCha20Decrypt(Byte[] CipherText,Byte[] Nonce,Byte[] Key,Boolean ClearKey=false) 
         {
-            return ChaCha20Encrypt(CipherText, Nonce, Key);
+            return ChaCha20Encrypt(CipherText, Nonce, Key,ClearKey);
         }
 
-        public static Byte[] ChaCha20IETFEncrypt(Byte[] Message, Byte[] Nonce, Byte[] Key)
+        public static Byte[] ChaCha20IETFEncrypt(Byte[] Message, Byte[] Nonce, Byte[] Key, Boolean ClearKey = false)
         {
             if (Message == null)
             {
@@ -209,19 +212,22 @@ namespace ASodium
                 throw new CryptographicException("Failed to encrypt using ChaCha20 stream cipher");
             }
 
-            GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.Length);
-            MyGeneralGCHandle.Free();
+            if (ClearKey == true)
+            {
+                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.Length);
+                MyGeneralGCHandle.Free();
+            }
 
             return OutPut;
         }
 
-        public static Byte[] ChaCha20IETFDecrypt(Byte[] CipherText, Byte[] Nonce, Byte[] Key)
+        public static Byte[] ChaCha20IETFDecrypt(Byte[] CipherText, Byte[] Nonce, Byte[] Key, Boolean ClearKey = false)
         {
-            return ChaCha20IETFEncrypt(CipherText, Nonce, Key);
+            return ChaCha20IETFEncrypt(CipherText, Nonce, Key,ClearKey);
         }
 
-        public static Byte[] ChaCha20StraightEncrypt(Byte[] Message, Byte[] Nonce, Byte[] Key, ulong IC) 
+        public static Byte[] ChaCha20StraightEncrypt(Byte[] Message, Byte[] Nonce, Byte[] Key, ulong IC,Boolean ClearKey=false) 
         {
             if (Message == null)
             {
@@ -266,19 +272,22 @@ namespace ASodium
                 throw new CryptographicException("Failed to straight encrypt using ChaCha20 stream cipher");
             }
 
-            GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.Length);
-            MyGeneralGCHandle.Free();
+            if (ClearKey == true)
+            {
+                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.Length);
+                MyGeneralGCHandle.Free();
+            }
 
             return OutPut;
         }
 
-        public static Byte[] ChaCha20StraightDecrypt(Byte[] CipherText, Byte[] Nonce, Byte[] Key, ulong IC) 
+        public static Byte[] ChaCha20StraightDecrypt(Byte[] CipherText, Byte[] Nonce, Byte[] Key, ulong IC, Boolean ClearKey = false) 
         {
-            return ChaCha20StraightEncrypt(CipherText, Nonce, Key, IC);
+            return ChaCha20StraightEncrypt(CipherText, Nonce, Key, IC,ClearKey);
         }
 
-        public static Byte[] ChaCha20IETFStraightEncrypt(Byte[] Message, Byte[] Nonce, Byte[] Key, ulong IC)
+        public static Byte[] ChaCha20IETFStraightEncrypt(Byte[] Message, Byte[] Nonce, Byte[] Key, ulong IC, Boolean ClearKey = false)
         {
             if (Message == null)
             {
@@ -322,16 +331,19 @@ namespace ASodium
                 throw new CryptographicException("Failed to straight encrypt using ChaCha20 stream cipher");
             }
 
-            GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.Length);
-            MyGeneralGCHandle.Free();
+            if (ClearKey == true)
+            {
+                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.Length);
+                MyGeneralGCHandle.Free();
+            }
 
             return OutPut;
         }
 
-        public static Byte[] ChaCha20IETFStraightDecrypt(Byte[] CipherText, Byte[] Nonce, Byte[] Key, ulong IC)
+        public static Byte[] ChaCha20IETFStraightDecrypt(Byte[] CipherText, Byte[] Nonce, Byte[] Key, ulong IC, Boolean ClearKey = false)
         {
-            return ChaCha20IETFStraightEncrypt(CipherText, Nonce, Key, IC);
+            return ChaCha20IETFStraightEncrypt(CipherText, Nonce, Key, IC,ClearKey);
         }
     }
 }

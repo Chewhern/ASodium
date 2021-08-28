@@ -36,7 +36,7 @@ namespace ASodium
             return SodiumPublicKeyBoxLibrary.crypto_box_messagebytes_max();
         }
 
-        public static Byte[] CalculateSharedSecret(Byte[] OtherUserPublicKey,Byte[] CurrentUserPrivateKey) 
+        public static Byte[] CalculateSharedSecret(Byte[] OtherUserPublicKey,Byte[] CurrentUserPrivateKey,Boolean ClearKey=false) 
         {
             Byte[] SharedSecret = new Byte[GetBeforeNMBytesLength()];
             if (OtherUserPublicKey == null) 
@@ -69,17 +69,22 @@ namespace ASodium
                 throw new CryptographicException("Failed to calculate shared secret.");
             }
 
-            GCHandle MyGeneralGCHandle = GCHandle.Alloc(OtherUserPublicKey, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), OtherUserPublicKey.Length);
-            MyGeneralGCHandle.Free();
-            MyGeneralGCHandle = GCHandle.Alloc(CurrentUserPrivateKey, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), CurrentUserPrivateKey.Length);
-            MyGeneralGCHandle.Free();
+            GCHandle MyGeneralGCHandle;
+
+            if (ClearKey == true) 
+            {
+                MyGeneralGCHandle = GCHandle.Alloc(OtherUserPublicKey, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), OtherUserPublicKey.Length);
+                MyGeneralGCHandle.Free();
+                MyGeneralGCHandle = GCHandle.Alloc(CurrentUserPrivateKey, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), CurrentUserPrivateKey.Length);
+                MyGeneralGCHandle.Free();
+            }
 
             return SharedSecret;
         }
 
-        public static IntPtr CalculateSharedSecretIntPtr(Byte[] OtherUserPublicKey, Byte[] CurrentUserPrivateKey)
+        public static IntPtr CalculateSharedSecretIntPtr(Byte[] OtherUserPublicKey, Byte[] CurrentUserPrivateKey,Boolean ClearKey=false)
         {
             Byte[] SharedSecret = new Byte[GetBeforeNMBytesLength()];
             if (OtherUserPublicKey == null)
@@ -112,12 +117,17 @@ namespace ASodium
                 throw new CryptographicException("Failed to calculate shared secret.");
             }
 
-            GCHandle MyGeneralGCHandle = GCHandle.Alloc(OtherUserPublicKey, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), OtherUserPublicKey.Length);
-            MyGeneralGCHandle.Free();
-            MyGeneralGCHandle = GCHandle.Alloc(CurrentUserPrivateKey, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), CurrentUserPrivateKey.Length);
-            MyGeneralGCHandle.Free();
+            GCHandle MyGeneralGCHandle;
+
+            if (ClearKey == true)
+            {
+                MyGeneralGCHandle = GCHandle.Alloc(OtherUserPublicKey, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), OtherUserPublicKey.Length);
+                MyGeneralGCHandle.Free();
+                MyGeneralGCHandle = GCHandle.Alloc(CurrentUserPrivateKey, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), CurrentUserPrivateKey.Length);
+                MyGeneralGCHandle.Free();
+            }
 
             Boolean IsZero = true;
             IntPtr SharedSecretIntPtr = SodiumGuardedHeapAllocation.Sodium_Malloc(ref IsZero, GetBeforeNMBytesLength());
@@ -144,7 +154,7 @@ namespace ASodium
             return SodiumRNG.GetRandomBytes(GetNonceBytesLength());
         }
 
-        public static Byte[] Create(Byte[] Message, Byte[] Nonce, Byte[] SharedSecret)
+        public static Byte[] Create(Byte[] Message, Byte[] Nonce, Byte[] SharedSecret,Boolean ClearKey=false)
         {
             if (SharedSecret == null || SharedSecret.Length != GetBeforeNMBytesLength())
                 throw new ArgumentException("Error: Shared Secret must be " + GetBeforeNMBytesLength() + " bytes in length");
@@ -157,9 +167,12 @@ namespace ASodium
 
             GCHandle MyGeneralGCHandle = new GCHandle();
 
-            MyGeneralGCHandle = GCHandle.Alloc(SharedSecret, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), SharedSecret.Length);
-            MyGeneralGCHandle.Free();
+            if (ClearKey == true) 
+            {
+                MyGeneralGCHandle = GCHandle.Alloc(SharedSecret, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), SharedSecret.Length);
+                MyGeneralGCHandle.Free();
+            }
 
             if (ret != 0)
                 throw new CryptographicException("Failed to create PublicKeyBox");
@@ -167,7 +180,7 @@ namespace ASodium
             return CipherText;
         }
 
-        public static Byte[] Open(Byte[] CipherText, Byte[] Nonce, Byte[] SharedSecret)
+        public static Byte[] Open(Byte[] CipherText, Byte[] Nonce, Byte[] SharedSecret, Boolean ClearKey = false)
         {
             if (SharedSecret == null || SharedSecret.Length != GetBeforeNMBytesLength())
                 throw new ArgumentException("Error: Shared Secret must be " + GetBeforeNMBytesLength() + " bytes in length");
@@ -207,14 +220,18 @@ namespace ASodium
                 throw new CryptographicException("Failed to open PublicKeyBox");
 
             GCHandle MyGeneralGCHandle = new GCHandle();
-            MyGeneralGCHandle = GCHandle.Alloc(SharedSecret, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), SharedSecret.Length);
-            MyGeneralGCHandle.Free();
+
+            if (ClearKey == true)
+            {
+                MyGeneralGCHandle = GCHandle.Alloc(SharedSecret, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), SharedSecret.Length);
+                MyGeneralGCHandle.Free();
+            }
 
             return Message;
         }
 
-        public static PublicKeyBoxDetachedBox CreateDetached(Byte[] Message, Byte[] Nonce, Byte[] SharedSecret)
+        public static PublicKeyBoxDetachedBox CreateDetached(Byte[] Message, Byte[] Nonce, Byte[] SharedSecret, Boolean ClearKey = false)
         {
             PublicKeyBoxDetachedBox MyDetachedBox = new PublicKeyBoxDetachedBox();
 
@@ -230,9 +247,13 @@ namespace ASodium
             int ret = SodiumPublicKeyBoxLibrary.crypto_box_detached_afternm(CipherText, MAC, Message, Message.Length, Nonce, SharedSecret);
 
             GCHandle MyGeneralGCHandle = new GCHandle();
-            MyGeneralGCHandle = GCHandle.Alloc(SharedSecret, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), SharedSecret.Length);
-            MyGeneralGCHandle.Free();
+
+            if (ClearKey == true)
+            {
+                MyGeneralGCHandle = GCHandle.Alloc(SharedSecret, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), SharedSecret.Length);
+                MyGeneralGCHandle.Free();
+            }
 
             if (ret != 0)
                 throw new CryptographicException("Failed to create public detached Box");
@@ -243,7 +264,7 @@ namespace ASodium
             return MyDetachedBox;
         }
 
-        public static byte[] OpenDetached(Byte[] CipherText, Byte[] MAC, Byte[] Nonce, Byte[] SharedSecret)
+        public static byte[] OpenDetached(Byte[] CipherText, Byte[] MAC, Byte[] Nonce, Byte[] SharedSecret,Boolean ClearKey=false)
         {
             if (SharedSecret == null || SharedSecret.Length != GetBeforeNMBytesLength())
                 throw new ArgumentException("Error: Shared Secret must be " + GetBeforeNMBytesLength() + " bytes in length");
@@ -261,9 +282,13 @@ namespace ASodium
                 throw new CryptographicException("Failed to open public detached Box");
 
             GCHandle MyGeneralGCHandle = new GCHandle();
-            MyGeneralGCHandle = GCHandle.Alloc(SharedSecret, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), SharedSecret.Length);
-            MyGeneralGCHandle.Free();
+
+            if (ClearKey == true)
+            {
+                MyGeneralGCHandle = GCHandle.Alloc(SharedSecret, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), SharedSecret.Length);
+                MyGeneralGCHandle.Free();
+            }
 
             return Message;
         }

@@ -73,7 +73,7 @@ namespace ASodium
             return Salt;
         }
 
-        public static Byte[] PBKDF2(long DerivedKeyLength,Byte[] Password,Byte[] Salt,STRENGTH strength = STRENGTH.INTERACTIVE) 
+        public static Byte[] PBKDF2(long DerivedKeyLength,Byte[] Password,Byte[] Salt,STRENGTH strength = STRENGTH.INTERACTIVE,Boolean ClearKey=false) 
         {
             if (DerivedKeyLength == 0) 
             {
@@ -128,14 +128,17 @@ namespace ASodium
                 throw new CryptographicException("Failed to complete the PBKDF2 Process");
             }
 
-            GCHandle MyGeneralGCHandle = GCHandle.Alloc(Password, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Password.LongLength);
-            MyGeneralGCHandle.Free();
+            if (ClearKey == true) 
+            {
+                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Password, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Password.LongLength);
+                MyGeneralGCHandle.Free();
+            }
 
             return DerivedKey;
         }
 
-        public static Byte[] CustomPBKDF2(long DerivedKeyLength, Byte[] Password, Byte[] Salt, long OpsLimit,long MemLimit)
+        public static Byte[] CustomPBKDF2(long DerivedKeyLength, Byte[] Password, Byte[] Salt, long OpsLimit,long MemLimit,Boolean ClearKey=false)
         {
             if (OpsLimit == 0) 
             {
@@ -202,14 +205,17 @@ namespace ASodium
                 throw new CryptographicException("Failed to complete the PBKDF2 Process");
             }
 
-            GCHandle MyGeneralGCHandle = GCHandle.Alloc(Password, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Password.LongLength);
-            MyGeneralGCHandle.Free();
+            if (ClearKey == true) 
+            {
+                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Password, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Password.LongLength);
+                MyGeneralGCHandle.Free();
+            }
 
             return DerivedKey;
         }
 
-        public static String ComputePasswordHash(Byte[] Password, STRENGTH strength = STRENGTH.INTERACTIVE)
+        public static String ComputePasswordHash(Byte[] Password, STRENGTH strength = STRENGTH.INTERACTIVE,Boolean ClearKey=false)
         {
             if (Password == null)
             {
@@ -242,10 +248,17 @@ namespace ASodium
                 throw new CryptographicException("Failed to complete the PBKDF2 Process");
             }
 
+            if (ClearKey == true)
+            {
+                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Password, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Password.LongLength);
+                MyGeneralGCHandle.Free();
+            }
+
             return Encoding.UTF8.GetString(ComputedPasswordHashWithParams);
         }
 
-        public static String CustomComputePasswordHash(Byte[] Password, long OpsLimit, long MemLimit)
+        public static String CustomComputePasswordHash(Byte[] Password, long OpsLimit, long MemLimit,Boolean ClearKey=false)
         {
             if (OpsLimit == 0)
             {
@@ -290,10 +303,17 @@ namespace ASodium
                 throw new CryptographicException("Failed to complete the PBKDF2 Process");
             }
 
+            if (ClearKey == true)
+            {
+                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Password, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Password.LongLength);
+                MyGeneralGCHandle.Free();
+            }
+
             return Encoding.UTF8.GetString(ComputedPasswordHashWithParams);
         }
 
-        public static Boolean VerifyPassword(String ComputedPasswordHashWithParams,Byte[] Password) 
+        public static Boolean VerifyPassword(String ComputedPasswordHashWithParams,Byte[] Password,Boolean ClearKey=false) 
         {
             if (ComputedPasswordHashWithParams == null) 
             {
@@ -320,9 +340,12 @@ namespace ASodium
 
             int result = SodiumPasswordHashScryptSalsa208SHA256Library.crypto_pwhash_scryptsalsa208sha256_str_verify(ComputedPasswordHashWithParams, Password, Password.LongLength);
 
-            GCHandle MyGeneralGCHandle = GCHandle.Alloc(Password, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Password.LongLength);
-            MyGeneralGCHandle.Free();
+            if (ClearKey == true)
+            {
+                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Password, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Password.LongLength);
+                MyGeneralGCHandle.Free();
+            }
 
             if (result != 0) 
             {

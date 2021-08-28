@@ -58,7 +58,7 @@ namespace ASodium
             }
         }
 
-        public static Byte[] ComputePoly1305MAC(Byte[] Message,Byte[] Key) 
+        public static Byte[] ComputePoly1305MAC(Byte[] Message,Byte[] Key,Boolean ClearKey=false) 
         {
             if (Message == null) 
             {
@@ -90,10 +90,17 @@ namespace ASodium
                 throw new CryptographicException("Failed to compute Poly1305 MAC");
             }
 
+            if (ClearKey == true) 
+            {
+                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.Length);
+                MyGeneralGCHandle.Free();
+            }
+
             return Poly1305MAC;
         }
 
-        public static Boolean VerifyPoly1305MAC(Byte[] Poly1305MAC, Byte[] Message, Byte[] Key) 
+        public static Boolean VerifyPoly1305MAC(Byte[] Poly1305MAC, Byte[] Message, Byte[] Key,Boolean ClearKey=false) 
         {
             if (Message == null)
             {
@@ -131,9 +138,12 @@ namespace ASodium
 
             int result = SodiumOneTimeAuthLibrary.crypto_onetimeauth_verify(Poly1305MAC, Message, Message.LongLength, Key);
 
-            GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.Length);
-            MyGeneralGCHandle.Free();
+            if (ClearKey == true) 
+            {
+                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.Length);
+                MyGeneralGCHandle.Free();
+            }
 
             if (result != 0) 
             {
@@ -145,7 +155,7 @@ namespace ASodium
             }
         }
 
-        public static Byte[] InitializeState(Byte[] Key) 
+        public static Byte[] InitializeState(Byte[] Key,Boolean ClearKey=false) 
         {
             if (Key == null)
             {
@@ -168,9 +178,12 @@ namespace ASodium
                 throw new CryptographicException("Error: Failed to initialize Poly1305 state");
             }
 
-            GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.Length);
-            MyGeneralGCHandle.Free();
+            if (ClearKey == true) 
+            {
+                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.Length);
+                MyGeneralGCHandle.Free();
+            }
 
             return State;
         }

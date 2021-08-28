@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net472;netcoreapp3.1</TargetFrameworks>
     <Authors>Chew Lik Hern</Authors>
-    <Version>0.5.1.0</Version>
+    <Version>0.5.2.0</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <AssemblyName>ASodium</AssemblyName>
     <PackageId>ASodium</PackageId>

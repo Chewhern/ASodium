@@ -20,21 +20,24 @@ namespace ASodium
             return SodiumScalarMultLibrary.crypto_scalarmult_primitive();
         }
 
-        public static Byte[] Base(Byte[] CurrentUserSecretKey) 
+        public static Byte[] Base(Byte[] CurrentUserSecretKey,Boolean ClearKey=false) 
         {
             if (CurrentUserSecretKey == null || CurrentUserSecretKey.Length != ScalarBytes())
                 throw new ArgumentException("Error: Secret Key must be " + ScalarBytes() + " in bytes");
             Byte[] PublicKey = new Byte[ScalarBytes()];
             SodiumScalarMultLibrary.crypto_scalarmult_base(PublicKey, CurrentUserSecretKey);
 
-            GCHandle MyGeneralGCHandle = GCHandle.Alloc(CurrentUserSecretKey, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), CurrentUserSecretKey.Length);
-            MyGeneralGCHandle.Free();
+            if (ClearKey == true) 
+            {
+                GCHandle MyGeneralGCHandle = GCHandle.Alloc(CurrentUserSecretKey, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), CurrentUserSecretKey.Length);
+                MyGeneralGCHandle.Free();
+            }
 
             return PublicKey;
         }
 
-        public static Byte[] Mult(Byte[] CurrentUserSecretKey,Byte[] OtherUserPublicKey) 
+        public static Byte[] Mult(Byte[] CurrentUserSecretKey,Byte[] OtherUserPublicKey,Boolean ClearKey=false) 
         {
             if (CurrentUserSecretKey == null || CurrentUserSecretKey.Length != ScalarBytes())
                 throw new ArgumentException("Error: Secret Key must be " + ScalarBytes() + " in bytes");
@@ -45,14 +48,17 @@ namespace ASodium
             Byte[] SharedSecret = new Byte[Bytes()];
             SodiumScalarMultLibrary.crypto_scalarmult(SharedSecret, CurrentUserSecretKey, OtherUserPublicKey);
 
-            GCHandle MyGeneralGCHandle = GCHandle.Alloc(CurrentUserSecretKey, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), CurrentUserSecretKey.Length);
-            MyGeneralGCHandle.Free();
+            if (ClearKey == true) 
+            {
+                GCHandle MyGeneralGCHandle = GCHandle.Alloc(CurrentUserSecretKey, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), CurrentUserSecretKey.Length);
+                MyGeneralGCHandle.Free();
+            }
 
             return SharedSecret;
         }
 
-        public static IntPtr MultIntPtr(Byte[] CurrentUserSecretKey, Byte[] OtherUserPublicKey)
+        public static IntPtr MultIntPtr(Byte[] CurrentUserSecretKey, Byte[] OtherUserPublicKey, Boolean ClearKey = false)
         {
             if (CurrentUserSecretKey == null || CurrentUserSecretKey.Length != ScalarBytes())
                 throw new ArgumentException("Error: Secret Key must be " + ScalarBytes() + " in bytes");
@@ -66,9 +72,13 @@ namespace ASodium
             Boolean IsZero = true;
             IntPtr SharedSecretIntPtr = SodiumGuardedHeapAllocation.Sodium_Malloc(ref IsZero,SharedSecret.Length);
 
-            GCHandle MyGeneralGCHandle = GCHandle.Alloc(CurrentUserSecretKey, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), CurrentUserSecretKey.Length);
-            MyGeneralGCHandle.Free();
+            GCHandle MyGeneralGCHandle = new GCHandle();
+            if (ClearKey == true)
+            {
+                MyGeneralGCHandle = GCHandle.Alloc(CurrentUserSecretKey, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), CurrentUserSecretKey.Length);
+                MyGeneralGCHandle.Free();
+            }
 
             if (IsZero == false) 
             {

@@ -59,7 +59,7 @@ namespace ASodium
             return Nonce;
         }
 
-        public static Byte[] Salsa20Encrypt(Byte[] Message, Byte[] Nonce, Byte[] Key)
+        public static Byte[] Salsa20Encrypt(Byte[] Message, Byte[] Nonce, Byte[] Key,Boolean ClearKey=false)
         {
             if (Message == null)
             {
@@ -103,19 +103,22 @@ namespace ASodium
                 throw new CryptographicException("Failed to encrypt using ChaCha20 stream cipher");
             }
 
-            GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.Length);
-            MyGeneralGCHandle.Free();
+            if (ClearKey == true) 
+            {
+                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.Length);
+                MyGeneralGCHandle.Free();
+            }
 
             return OutPut;
         }
 
-        public static Byte[] Salsa20Decrypt(Byte[] CipherText, Byte[] Nonce, Byte[] Key)
+        public static Byte[] Salsa20Decrypt(Byte[] CipherText, Byte[] Nonce, Byte[] Key, Boolean ClearKey = false)
         {
             return Salsa20Encrypt(CipherText, Nonce, Key);
         }
 
-        public static Byte[] Salsa20StraightEncrypt(Byte[] Message, Byte[] Nonce, Byte[] Key, ulong IC)
+        public static Byte[] Salsa20StraightEncrypt(Byte[] Message, Byte[] Nonce, Byte[] Key, ulong IC,Boolean ClearKey=false)
         {
             if (Message == null)
             {
@@ -159,16 +162,19 @@ namespace ASodium
                 throw new CryptographicException("Failed to straight encrypt using ChaCha20 stream cipher");
             }
 
-            GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.Length);
-            MyGeneralGCHandle.Free();
+            if (ClearKey == true) 
+            {
+                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.Length);
+                MyGeneralGCHandle.Free();
+            }
 
             return OutPut;
         }
 
-        public static Byte[] Salsa20StraightDecrypt(Byte[] CipherText, Byte[] Nonce, Byte[] Key, ulong IC)
+        public static Byte[] Salsa20StraightDecrypt(Byte[] CipherText, Byte[] Nonce, Byte[] Key, ulong IC, Boolean ClearKey = false)
         {
-            return Salsa20StraightEncrypt(CipherText, Nonce, Key, IC);
+            return Salsa20StraightEncrypt(CipherText, Nonce, Key, IC,ClearKey);
         }
     }
 }

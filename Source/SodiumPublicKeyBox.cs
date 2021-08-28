@@ -46,60 +46,6 @@ namespace ASodium
             return SodiumPublicKeyBoxLibrary.crypto_box_messagebytes_max();
         }
 
-        public static KeyPair GeneratedSeededKeyPair(Byte[] Seed) 
-        {
-            if (Seed == null) 
-            {
-                throw new ArgumentException("Error: Seed must not be null");
-            }
-            else 
-            {
-                if (Seed.Length != GetSeedBytesLength()) 
-                {
-                    throw new ArgumentException("Error: Seed must exactly " + GetSeedBytesLength() + " bytes in length");
-                }
-            }
-            Byte[] PublicKey = new Byte[GetPublicKeyBytesLength()];
-            Byte[] SecretKey = new Byte[GetSecretKeyBytesLength()];
-
-            SodiumPublicKeyBoxLibrary.crypto_box_seed_keypair(PublicKey,SecretKey,Seed);
-
-            GCHandle MyGeneralGCHandle = GCHandle.Alloc(Seed, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Seed.Length);
-            MyGeneralGCHandle.Free();
-
-            KeyPair MyKeyPair;
-            Boolean IsZero1 = true;
-            Boolean IsZero2 = true;
-            IntPtr PublicKeyIntPtr = SodiumGuardedHeapAllocation.Sodium_Malloc(ref IsZero1, GetPublicKeyBytesLength());
-            IntPtr SecretKeyIntPtr = SodiumGuardedHeapAllocation.Sodium_Malloc(ref IsZero2, GetSecretKeyBytesLength());
-            if(IsZero1==false && IsZero2 == false) 
-            {
-                Marshal.Copy(PublicKey, 0, PublicKeyIntPtr, PublicKey.Length);
-                Marshal.Copy(SecretKey, 0, SecretKeyIntPtr, SecretKey.Length);
-                SodiumGuardedHeapAllocation.Sodium_MProtect_NoAccess(PublicKeyIntPtr);
-                SodiumGuardedHeapAllocation.Sodium_MProtect_NoAccess(SecretKeyIntPtr);
-                MyKeyPair = new KeyPair(SecretKeyIntPtr, SecretKey.Length, PublicKeyIntPtr, PublicKey.Length);
-            }
-            else 
-            {
-                MyKeyPair = new KeyPair(IntPtr.Zero, 0, IntPtr.Zero, 0);
-            }
-
-            MyGeneralGCHandle = GCHandle.Alloc(SecretKey, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), SecretKey.Length);
-            MyGeneralGCHandle.Free();
-
-            MyGeneralGCHandle = GCHandle.Alloc(PublicKey, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), PublicKey.Length);
-            MyGeneralGCHandle.Free();
-
-            SecretKeyIntPtr = IntPtr.Zero;
-            PublicKeyIntPtr = IntPtr.Zero;
-
-            return MyKeyPair;
-        }
-
         public static KeyPair GenerateKeyPair() 
         {
             Byte[] PublicKey = new Byte[GetPublicKeyBytesLength()];
@@ -153,60 +99,58 @@ namespace ASodium
             return MyKeyPair;
         }
 
-        public static RevampedKeyPair GenerateSeededRevampedKeyPair(Byte[] Seed) 
-        {
-            if (Seed == null)
-            {
-                throw new ArgumentException("Error: Seed must not be null");
-            }
-            else
-            {
-                if (Seed.Length != GetSeedBytesLength())
-                {
-                    throw new ArgumentException("Error: Seed must exactly " + GetSeedBytesLength() + " bytes in length");
-                }
-            }
-            Byte[] PublicKey = new Byte[GetPublicKeyBytesLength()];
-            Byte[] SecretKey = new Byte[GetSecretKeyBytesLength()];
-
-            SodiumPublicKeyBoxLibrary.crypto_box_seed_keypair(PublicKey, SecretKey, Seed);
-
-            GCHandle MyGeneralGCHandle = GCHandle.Alloc(Seed, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Seed.Length);
-            MyGeneralGCHandle.Free();
-
-            RevampedKeyPair MyKeyPair = new RevampedKeyPair(PublicKey,SecretKey);
-
-            return MyKeyPair;
-        }
-
         public static Byte[] GenerateNonce() 
         {
             return SodiumRNG.GetRandomBytes(GetNonceBytesLength());
         }
 
-        public static Byte[] Create(Byte[] Message, Byte[] Nonce, Byte[] SecretKey, Byte[] PublicKey) 
+        public static Byte[] GeneratePublicKey(Byte[] SecretKey,Boolean ClearKey = false) 
         {
-            if (SecretKey == null || SecretKey.Length != GetSecretKeyBytesLength())
+            Byte[] PublicKey = SodiumScalarMult.Base(SecretKey, ClearKey);
+
+            return PublicKey;
+        }
+
+        public static Byte[] GenerateSharedSecret(Byte[] CurrentUserSecretKey,Byte[] OtherUserPublicKey,Boolean ClearKey = false) 
+        {
+            Byte[] SharedSecret = SodiumScalarMult.Mult(CurrentUserSecretKey, OtherUserPublicKey, ClearKey);
+
+            return SharedSecret;
+        }
+
+        public static IntPtr GenerateSharedSecretIntPtr(Byte[] CurrentUserSecretKey,Byte[] OtherUserPublicKey,Boolean ClearKey = false) 
+        {
+            IntPtr SharedSecret = SodiumScalarMult.MultIntPtr(CurrentUserSecretKey, OtherUserPublicKey, ClearKey);
+
+            return SharedSecret;
+        }
+
+        public static Byte[] Create(Byte[] Message, Byte[] Nonce, Byte[] CurrentUserSecretKey, Byte[] OtherUserPublicKey,Boolean ClearKey=false) 
+        {
+            if (CurrentUserSecretKey == null || CurrentUserSecretKey.Length != GetSecretKeyBytesLength())
                 throw new ArgumentException("Error: Secret key must be "+GetSecretKeyBytesLength()+" bytes in length");
 
-            if (PublicKey == null || PublicKey.Length != GetPublicKeyBytesLength())
+            if (OtherUserPublicKey == null || OtherUserPublicKey.Length != GetPublicKeyBytesLength())
                 throw new ArgumentException("Error: Public key must be " + GetPublicKeyBytesLength() + " bytes in length");
 
             if (Nonce == null || Nonce.Length != GetNonceBytesLength())
                 throw new ArgumentException("Error: Nonce must be " + GetNonceBytesLength() + " bytes in length");
 
             Byte[] CipherText = new Byte[Message.Length + GetMACBytesLength()];
-            int ret = SodiumPublicKeyBoxLibrary.crypto_box_easy(CipherText, Message, Message.Length, Nonce, PublicKey, SecretKey);
+            int ret = SodiumPublicKeyBoxLibrary.crypto_box_easy(CipherText, Message, Message.Length, Nonce, OtherUserPublicKey, CurrentUserSecretKey);
 
             GCHandle MyGeneralGCHandle = new GCHandle();
-            MyGeneralGCHandle = GCHandle.Alloc(SecretKey, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), SecretKey.Length);
-            MyGeneralGCHandle.Free();
 
-            MyGeneralGCHandle = GCHandle.Alloc(PublicKey, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), PublicKey.Length);
-            MyGeneralGCHandle.Free();
+            if (ClearKey == true) 
+            {
+                MyGeneralGCHandle = GCHandle.Alloc(CurrentUserSecretKey, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), CurrentUserSecretKey.Length);
+                MyGeneralGCHandle.Free();
+
+                MyGeneralGCHandle = GCHandle.Alloc(OtherUserPublicKey, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), OtherUserPublicKey.Length);
+                MyGeneralGCHandle.Free();
+            }
 
             if (ret != 0)
                 throw new CryptographicException("Failed to create PublicKeyBox");
@@ -214,12 +158,12 @@ namespace ASodium
             return CipherText;
         }
 
-        public static Byte[] Open(Byte[] CipherText, Byte[] Nonce, Byte[] SecretKey, Byte[] PublicKey)
+        public static Byte[] Open(Byte[] CipherText, Byte[] Nonce, Byte[] CurrentUserSecretKey, Byte[] OtherUserPublicKey,Boolean ClearKey=false)
         {
-            if (SecretKey == null || SecretKey.Length != GetSecretKeyBytesLength())
+            if (CurrentUserSecretKey == null || CurrentUserSecretKey.Length != GetSecretKeyBytesLength())
                 throw new ArgumentException("Error: Secret key must be " + GetSecretKeyBytesLength() + " bytes in length");
 
-            if (PublicKey == null || PublicKey.Length != GetPublicKeyBytesLength())
+            if (OtherUserPublicKey == null || OtherUserPublicKey.Length != GetPublicKeyBytesLength())
                 throw new ArgumentException("Error: Public key must be " + GetPublicKeyBytesLength() + " bytes in length");
 
             if (Nonce == null || Nonce.Length != GetNonceBytesLength())
@@ -251,31 +195,34 @@ namespace ASodium
             }
 
             Byte[] Message = new Byte[CipherText.Length - GetMACBytesLength()];
-            int ret = SodiumPublicKeyBoxLibrary.crypto_box_open_easy(Message, CipherText, CipherText.Length, Nonce, PublicKey, SecretKey);
+            int ret = SodiumPublicKeyBoxLibrary.crypto_box_open_easy(Message, CipherText, CipherText.Length, Nonce, OtherUserPublicKey, CurrentUserSecretKey);
 
             if (ret != 0)
                 throw new CryptographicException("Failed to open PublicKeyBox");
 
             GCHandle MyGeneralGCHandle = new GCHandle();
-            MyGeneralGCHandle = GCHandle.Alloc(SecretKey, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), SecretKey.Length);
-            MyGeneralGCHandle.Free();
+            if (ClearKey == true)
+            {
+                MyGeneralGCHandle = GCHandle.Alloc(CurrentUserSecretKey, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), CurrentUserSecretKey.Length);
+                MyGeneralGCHandle.Free();
 
-            MyGeneralGCHandle = GCHandle.Alloc(PublicKey, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), PublicKey.Length);
-            MyGeneralGCHandle.Free();
+                MyGeneralGCHandle = GCHandle.Alloc(OtherUserPublicKey, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), OtherUserPublicKey.Length);
+                MyGeneralGCHandle.Free();
+            }
 
             return Message;
         }
 
-        public static PublicKeyBoxDetachedBox CreateDetached(Byte[] Message, Byte[] Nonce, Byte[] SecretKey, Byte[] PublicKey)
+        public static PublicKeyBoxDetachedBox CreateDetached(Byte[] Message, Byte[] Nonce, Byte[] CurrentUserSecretKey, Byte[] OtherUserPublicKey, Boolean ClearKey = false)
         {
             PublicKeyBoxDetachedBox MyDetachedBox = new PublicKeyBoxDetachedBox();
 
-            if (SecretKey == null || SecretKey.Length != GetSecretKeyBytesLength())
+            if (CurrentUserSecretKey == null || CurrentUserSecretKey.Length != GetSecretKeyBytesLength())
                 throw new ArgumentException("Error: Secret key must be " + GetSecretKeyBytesLength() + " bytes in length");
 
-            if (PublicKey == null || PublicKey.Length != GetPublicKeyBytesLength())
+            if (OtherUserPublicKey == null || OtherUserPublicKey.Length != GetPublicKeyBytesLength())
                 throw new ArgumentException("Error: Public key must be " + GetPublicKeyBytesLength() + " bytes in length");
 
             if (Nonce == null || Nonce.Length != GetNonceBytesLength())
@@ -284,16 +231,20 @@ namespace ASodium
             Byte[] CipherText = new Byte[Message.LongLength];
             Byte[] MAC = new byte[GetMACBytesLength()];
 
-            int ret = SodiumPublicKeyBoxLibrary.crypto_box_detached(CipherText, MAC, Message, Message.Length, Nonce, PublicKey,SecretKey);
+            int ret = SodiumPublicKeyBoxLibrary.crypto_box_detached(CipherText, MAC, Message, Message.Length, Nonce, OtherUserPublicKey,CurrentUserSecretKey);
 
             GCHandle MyGeneralGCHandle = new GCHandle();
-            MyGeneralGCHandle = GCHandle.Alloc(SecretKey, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), SecretKey.Length);
-            MyGeneralGCHandle.Free();
 
-            MyGeneralGCHandle = GCHandle.Alloc(PublicKey, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), PublicKey.Length);
-            MyGeneralGCHandle.Free();
+            if (ClearKey == true)
+            {
+                MyGeneralGCHandle = GCHandle.Alloc(CurrentUserSecretKey, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), CurrentUserSecretKey.Length);
+                MyGeneralGCHandle.Free();
+
+                MyGeneralGCHandle = GCHandle.Alloc(OtherUserPublicKey, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), OtherUserPublicKey.Length);
+                MyGeneralGCHandle.Free();
+            }
 
             if (ret != 0)
                 throw new CryptographicException("Failed to create public detached Box");
@@ -304,12 +255,12 @@ namespace ASodium
             return MyDetachedBox;
         }
 
-        public static byte[] OpenDetached(Byte[] CipherText, Byte[] MAC, Byte[] Nonce, Byte[] SecretKey, Byte[] PublicKey)
+        public static byte[] OpenDetached(Byte[] CipherText, Byte[] MAC, Byte[] Nonce, Byte[] CurrentUserSecretKey, Byte[] OtherUserPublicKey,Boolean ClearKey=false)
         {
-            if (SecretKey == null || SecretKey.Length != GetSecretKeyBytesLength())
+            if (CurrentUserSecretKey == null || CurrentUserSecretKey.Length != GetSecretKeyBytesLength())
                 throw new ArgumentException("Error: Secret key must be " + GetSecretKeyBytesLength() + " bytes in length");
 
-            if (PublicKey == null || PublicKey.Length != GetPublicKeyBytesLength())
+            if (OtherUserPublicKey == null || OtherUserPublicKey.Length != GetPublicKeyBytesLength())
                 throw new ArgumentException("Error: Public key must be " + GetPublicKeyBytesLength() + " bytes in length");
 
             if (Nonce == null || Nonce.Length != GetNonceBytesLength())
@@ -319,19 +270,22 @@ namespace ASodium
                 throw new ArgumentException("Error: MAC must be "+GetMACBytesLength()+" bytes in length");
 
             Byte[] Message = new Byte[CipherText.Length];
-            int ret = SodiumPublicKeyBoxLibrary.crypto_box_open_detached(Message, CipherText, MAC, CipherText.Length, Nonce, PublicKey,SecretKey);
+            int ret = SodiumPublicKeyBoxLibrary.crypto_box_open_detached(Message, CipherText, MAC, CipherText.Length, Nonce, OtherUserPublicKey,CurrentUserSecretKey);
 
             if (ret != 0)
                 throw new CryptographicException("Failed to open public detached Box");
 
             GCHandle MyGeneralGCHandle = new GCHandle();
-            MyGeneralGCHandle = GCHandle.Alloc(SecretKey, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), SecretKey.Length);
-            MyGeneralGCHandle.Free();
+            if (ClearKey == true)
+            {
+                MyGeneralGCHandle = GCHandle.Alloc(CurrentUserSecretKey, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), CurrentUserSecretKey.Length);
+                MyGeneralGCHandle.Free();
 
-            MyGeneralGCHandle = GCHandle.Alloc(PublicKey, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), PublicKey.Length);
-            MyGeneralGCHandle.Free();
+                MyGeneralGCHandle = GCHandle.Alloc(OtherUserPublicKey, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), OtherUserPublicKey.Length);
+                MyGeneralGCHandle.Free();
+            }
 
             return Message;
         }

@@ -36,12 +36,12 @@ namespace ASodium
             return Key;
         }
 
-        public static Byte[] KDFFunction(uint SubKeyLength, ulong SubKeyID, String Context, Byte[] MasterKey)
+        public static Byte[] KDFFunction(uint SubKeyLength, ulong SubKeyID, String Context, Byte[] MasterKey,Boolean ClearKey=false)
         {
-            return KDFFunction(SubKeyLength, SubKeyID, Encoding.UTF8.GetBytes(Context), MasterKey);
+            return KDFFunction(SubKeyLength, SubKeyID, Encoding.UTF8.GetBytes(Context), MasterKey,ClearKey);
         }
 
-        public static Byte[] KDFFunction(uint SubKeyLength,ulong SubKeyID,Byte[] Context,Byte[] MasterKey)
+        public static Byte[] KDFFunction(uint SubKeyLength,ulong SubKeyID,Byte[] Context,Byte[] MasterKey,Boolean ClearKey=false)
         {
             if (Context == null) 
             {
@@ -65,9 +65,12 @@ namespace ASodium
             Byte[] SubKey = new Byte[SubKeyLength];
             int result = SodiumKDFLibrary.crypto_kdf_derive_from_key(SubKey, SubKeyLength, SubKeyID, Context, MasterKey);
 
-            GCHandle MyGeneralGCHandle = GCHandle.Alloc(MasterKey, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), MasterKey.Length);
-            MyGeneralGCHandle.Free();
+            if (ClearKey == true) 
+            {
+                GCHandle MyGeneralGCHandle = GCHandle.Alloc(MasterKey, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), MasterKey.Length);
+                MyGeneralGCHandle.Free();
+            }
 
             if (result == -1) 
             {
@@ -77,12 +80,12 @@ namespace ASodium
             return SubKey;
         }
 
-        public static IntPtr KDFFunctionIntPtr(uint SubKeyLength, ulong SubKeyID, String Context, Byte[] MasterKey)
+        public static IntPtr KDFFunctionIntPtr(uint SubKeyLength, ulong SubKeyID, String Context, Byte[] MasterKey, Boolean ClearKey = false)
         {
-            return KDFFunctionIntPtr(SubKeyLength, SubKeyID, Encoding.UTF8.GetBytes(Context), MasterKey);
+            return KDFFunctionIntPtr(SubKeyLength, SubKeyID, Encoding.UTF8.GetBytes(Context), MasterKey,ClearKey);
         }
 
-        public static IntPtr KDFFunctionIntPtr(uint SubKeyLength, ulong SubKeyID, Byte[] Context, Byte[] MasterKey)
+        public static IntPtr KDFFunctionIntPtr(uint SubKeyLength, ulong SubKeyID, Byte[] Context, Byte[] MasterKey, Boolean ClearKey = false)
         {
             if (Context == null)
             {
@@ -106,9 +109,13 @@ namespace ASodium
             Byte[] SubKey = new Byte[SubKeyLength];
             int result = SodiumKDFLibrary.crypto_kdf_derive_from_key(SubKey, SubKeyLength, SubKeyID, Context, MasterKey);
 
-            GCHandle MyGeneralGCHandle = GCHandle.Alloc(MasterKey, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), MasterKey.Length);
-            MyGeneralGCHandle.Free();
+            GCHandle MyGeneralGCHandle = new GCHandle();
+            if (ClearKey == true) 
+            {
+                MyGeneralGCHandle = GCHandle.Alloc(MasterKey, GCHandleType.Pinned);
+                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), MasterKey.Length);
+                MyGeneralGCHandle.Free();
+            }
 
             if (result == -1)
             {
