@@ -18,7 +18,7 @@ Otherwise all the stuffs pretty much tested and work fine.
 -> XChaChaPoly1305 in libsodium's secretbox was added\
 -> minor adjustments to the ASodium binding on SecretBox and RNG. 
 
-0.5.2 version(Incoming updates)\
+0.5.2 version\
 -> Removed unnecessary code\
 -> Added some helper\
 -> Added some usability\
