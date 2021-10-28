@@ -1,5 +1,6 @@
 ## Note(.Net Framework)
-If you are developing for .Net Framework 4.8 or 4.7.2, you are required to put the dll(libsodium) into the application folder else it won't work/
+If you are developing for .Net Framework 4.8 or 4.7.2, you are required to put the dll(libsodium) into the application folder else it won't work
+
 In later version of this binding/wrapper, it won't support .Net Framework anymore(No offense/insult intended){Blame microsoft and the author of the cryptography library}
 
 ## Note(.Net 5/ASP.Net Core)
