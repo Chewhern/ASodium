@@ -1,8 +1,18 @@
-Note:\
-But this binding requires developer to put the libsodium.dll library into the exact same directory that the current application work on.
+## Note(.Net Framework)
+If you are developing for .Net Framework 4.8 or 4.7.2, you are required to put the dll(libsodium) into the application folder else it won't work/
+In later version of this binding/wrapper, it won't support .Net Framework anymore(No offense/insult intended){Blame microsoft and the author of the cryptography library}
 
-AES256GCM is not yet tested as my machine does not support it, it can have bugs or not working at all.
+## Note(.Net 5/ASP.Net Core)
+If you are developing for .Net 5 or ASP.Net Core 5, you don't need to put the dll(libsodium) into the application folder.
 
+## Note(UWP/WPF)
+If you are developing for UWP/WPF, I won't be providing support for UWP/WPF as it's not standardized and easy to use as opposed to .Net 5 or .Net Framework.
+
+## Note(Xamarin)
+In current stage, there's no support to be added to Xamarin but in future there'll be. If you are a .Net developer, feel free to contribute to this wrapper
+library.
+
+## Others
 One of the sodium helper API "sodium_increment()" is not yet tested as it requires certain system architecture to work. It can have bugs or not working. \
 Otherwise all the stuffs pretty much tested and work fine.
 
