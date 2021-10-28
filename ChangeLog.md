@@ -9,8 +9,8 @@ If you are developing for .Net 5 or ASP.Net Core 5, you don't need to put the dl
 If you are developing for UWP/WPF, I won't be providing support for UWP/WPF as it's not standardized and easy to use as opposed to .Net 5 or .Net Framework.
 
 ## Note(Xamarin)
-In current stage, there's no support to be added to Xamarin but in future there'll be. If you are a .Net developer, feel free to contribute to this wrapper
-library.
+In current stage, there's no support to be added to Xamarin but in future there'll be. If you are a .Net developer and you like this wrapper feel free to add support
+to this library so that it can support Xamarin.
 
 ## Others
 One of the sodium helper API "sodium_increment()" is not yet tested as it requires certain system architecture to work. It can have bugs or not working. \
