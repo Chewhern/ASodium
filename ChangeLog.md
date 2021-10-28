@@ -1,7 +1,7 @@
 Note:\
-But this binding requires developer to put the libsodium.dll library into the exact same directory that the current application work on.\
+But this binding requires developer to put the libsodium.dll library into the exact same directory that the current application work on.
 
-AES256GCM is not yet tested as my machine does not support it, it can have bugs or not working at all.\
+AES256GCM is not yet tested as my machine does not support it, it can have bugs or not working at all.
 
 One of the sodium helper API "sodium_increment()" is not yet tested as it requires certain system architecture to work. It can have bugs or not working. \
 Otherwise all the stuffs pretty much tested and work fine.
