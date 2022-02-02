@@ -4,7 +4,7 @@
 
 0.5.0 version\
 -> due to the error in 0.4.0 version, SetEnvironmentHelper put in the nuget package\
--> this has a problem as it is in the exact same location as the SodiumInit\
+-> this has a problem as it is in the exact same location as the SodiumInit
 
 0.5.1 version\
 -> due to the problem in 0.5.0 version, SetEnvironmentHelper has a separate class now\
@@ -19,9 +19,9 @@
 
 0.5.3 version\
 -> Removed unnecessary code\
--> MAC in Salsa20Poly1305,ChaCha20Poly1305 and ChaCha20IETFPoly1305 in SodiumSecretBox no longer uses **System.Linq**
-and it uses **sodium_memcpm** to do the comparison with the MAC attached in the message.
--> **SodiumSecureMemory.SecureClearBytes()** replaces all the sensitive key clearing function in ASodium as the code is shorter while doing its job.
+-> MAC in Salsa20Poly1305,ChaCha20Poly1305 and ChaCha20IETFPoly1305 in SodiumSecretBox no longer uses **System.Linq** \
+and it uses **sodium_memcpm** to do the comparison with the MAC attached in the message.\
+-> **SodiumSecureMemory.SecureClearBytes()** replaces all the sensitive key clearing function in ASodium as the code is shorter while doing its job.\
 -> State clearing in several cryptographic functions were removed as it's uncertain they're sensitive or will cause troubles to the library(libsodium).
 
 ## Note(.Net Framework)
