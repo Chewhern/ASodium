@@ -38,7 +38,6 @@ namespace ASodium
 
             SodiumPublicKeyAuthLibrary.crypto_sign_keypair(PublicKey, SecretKey);
 
-            GCHandle MyGeneralGCHandle = new GCHandle();
 
             KeyPair MyKeyPair;
             Boolean IsZero1 = true;
@@ -58,13 +57,8 @@ namespace ASodium
                 MyKeyPair = new KeyPair(IntPtr.Zero, 0, IntPtr.Zero, 0);
             }
 
-            MyGeneralGCHandle = GCHandle.Alloc(SecretKey, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), SecretKey.Length);
-            MyGeneralGCHandle.Free();
-
-            MyGeneralGCHandle = GCHandle.Alloc(PublicKey, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), PublicKey.Length);
-            MyGeneralGCHandle.Free();
+            SodiumSecureMemory.SecureClearBytes(SecretKey);
+            SodiumSecureMemory.SecureClearBytes(PublicKey);
 
             SecretKeyIntPtr = IntPtr.Zero;
             PublicKeyIntPtr = IntPtr.Zero;
@@ -114,9 +108,7 @@ namespace ASodium
 
             if (ClearKey == true) 
             {
-                GCHandle MyGeneralGCHandle = GCHandle.Alloc(SecretKey, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), SecretKey.Length);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(SecretKey);
             }
 
             return SignatureMessage;
@@ -188,9 +180,7 @@ namespace ASodium
 
             if (ClearKey == true)
             {
-                GCHandle MyGeneralGCHandle = GCHandle.Alloc(SecretKey, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), SecretKey.Length);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(SecretKey);
             }
 
             return Signature;
@@ -264,9 +254,7 @@ namespace ASodium
 
             if (ClearKey == true)
             {
-                GCHandle MyGeneralGCHandle = GCHandle.Alloc(SecretKey, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), SecretKey.Length);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(SecretKey);
             }
 
             return PublicKey;
@@ -297,9 +285,7 @@ namespace ASodium
 
             if (ClearKey == true)
             {
-                GCHandle MyGeneralGCHandle = GCHandle.Alloc(SecretKey, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), SecretKey.Length);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(SecretKey);
             }
 
             return Seed;
@@ -328,12 +314,9 @@ namespace ASodium
                 throw new CryptographicException("Error: Failed to extract seeds");
             }
 
-            GCHandle MyGeneralGCHandle;
             if (ClearKey == true)
             {
-                MyGeneralGCHandle = GCHandle.Alloc(SecretKey, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), SecretKey.Length);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(SecretKey);
             }
 
             Boolean IsZero = true;
@@ -344,17 +327,13 @@ namespace ASodium
 
                 SodiumGuardedHeapAllocation.Sodium_MProtect_NoAccess(SeedIntPtr);
 
-                MyGeneralGCHandle = GCHandle.Alloc(Seed, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Seed.Length);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(Seed);
 
                 return SeedIntPtr;
             }
             else 
             {
-                MyGeneralGCHandle = GCHandle.Alloc(Seed, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Seed.Length);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(Seed);
 
                 return IntPtr.Zero;
             }
@@ -382,9 +361,7 @@ namespace ASodium
                 throw new CryptographicException("Error: Failed to sign message");
             }
 
-            GCHandle MyGeneralGCHandle = GCHandle.Alloc(SecretKey, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), SecretKey.Length);
-            MyGeneralGCHandle.Free();
+            SodiumSecureMemory.SecureClearBytes(SecretKey);
 
             PublicKeyAuthSealBox MySealBox = new PublicKeyAuthSealBox();
             MySealBox.SignatureMessage = SignatureMessage;
@@ -415,9 +392,7 @@ namespace ASodium
                 throw new CryptographicException("Error: Failed to sign message");
             }
 
-            GCHandle MyGeneralGCHandle = GCHandle.Alloc(SecretKey, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), SecretKey.Length);
-            MyGeneralGCHandle.Free();
+            SodiumSecureMemory.SecureClearBytes(SecretKey);
 
             PublicKeyAuthDetachedSealBox MySealBox = new PublicKeyAuthDetachedSealBox();
 

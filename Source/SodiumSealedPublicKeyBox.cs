@@ -85,13 +85,9 @@ namespace ASodium
                 throw new CryptographicException("Error: Failed to open sealed box");
             }
 
-            GCHandle MyGeneralGCHandle;
-
             if (ClearKey == true) 
             {
-                MyGeneralGCHandle = GCHandle.Alloc(CurrentUserSecretKey, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), CurrentUserSecretKey.Length);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(CurrentUserSecretKey);
             }
 
             return Message;

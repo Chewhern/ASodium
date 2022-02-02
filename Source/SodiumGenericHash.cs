@@ -88,9 +88,7 @@ namespace ASodium
             {
                 if (ClearKey==true) 
                 {
-                    GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
-                    SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), KeyLength);
-                    MyGeneralGCHandle.Free();
+                    SodiumSecureMemory.SecureClearBytes(Key);
                 }
             }
 
@@ -121,9 +119,7 @@ namespace ASodium
                 SodiumGuardedHeapAllocation.Sodium_MProtect_NoAccess(KeyIntPtr);
             }
 
-            GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.Length);
-            MyGeneralGCHandle.Free();
+            SodiumSecureMemory.SecureClearBytes(Key);
 
             if (IsZero == false) 
             {
@@ -155,9 +151,7 @@ namespace ASodium
                 SodiumGuardedHeapAllocation.Sodium_MProtect_NoAccess(KeyIntPtr);
             }
 
-            GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.Length);
-            MyGeneralGCHandle.Free();
+            SodiumSecureMemory.SecureClearBytes(Key);
 
             if (IsZero == false)
             {
@@ -189,9 +183,7 @@ namespace ASodium
                 SodiumGuardedHeapAllocation.Sodium_MProtect_NoAccess(KeyIntPtr);
             }
 
-            GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.Length);
-            MyGeneralGCHandle.Free();
+            SodiumSecureMemory.SecureClearBytes(Key);
 
             if (IsZero == false)
             {
@@ -249,9 +241,7 @@ namespace ASodium
             {
                 if (ClearKey == true) 
                 {
-                    GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
-                    SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), KeyLength);
-                    MyGeneralGCHandle.Free();
+                    SodiumSecureMemory.SecureClearBytes(Key);
                 }
             }
 

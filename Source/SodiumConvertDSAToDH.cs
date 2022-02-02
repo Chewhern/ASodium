@@ -57,9 +57,7 @@ namespace ASodium
 
             if (ClearKey == true) 
             {
-                GCHandle MyGeneralGCHandle = GCHandle.Alloc(ED25519SK, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), ED25519SK.Length);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(ED25519SK);
             }
 
             return X25519SK;
@@ -88,12 +86,9 @@ namespace ASodium
                 throw new CryptographicException("Error: Failed to convert ED25519 SK to X25519 PK");
             }
 
-            GCHandle MyGeneralGCHandle = new GCHandle();
             if (ClearKey == true) 
             {
-                MyGeneralGCHandle = GCHandle.Alloc(ED25519SK, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), ED25519SK.Length);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(ED25519SK);
             }
 
             Boolean IsZero = true;
@@ -103,16 +98,12 @@ namespace ASodium
             {
                 Marshal.Copy(X25519SK, 0, X25519SKIntPtr, X25519SK.Length);
                 SodiumGuardedHeapAllocation.Sodium_MProtect_NoAccess(X25519SKIntPtr);
-                MyGeneralGCHandle = GCHandle.Alloc(X25519SK, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), X25519SK.Length);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(X25519SK);
                 return X25519SKIntPtr;
             }
             else 
             {
-                MyGeneralGCHandle = GCHandle.Alloc(X25519SK, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), X25519SK.Length);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(X25519SK);
                 return IntPtr.Zero;
             }
         }

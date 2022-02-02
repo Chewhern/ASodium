@@ -66,22 +66,14 @@ namespace ASodium
                 SodiumGuardedHeapAllocation.Sodium_MProtect_NoAccess(PublicKeyIntPtr);
                 Marshal.Copy(SecretKey, 0, SecretKeyIntPtr, GetSecretKeyBytesLength());
                 SodiumGuardedHeapAllocation.Sodium_MProtect_NoAccess(SecretKeyIntPtr);
-                GCHandle MyGeneralGCHandle = GCHandle.Alloc(PublicKey, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), PublicKey.Length);
-                MyGeneralGCHandle.Free();
-                MyGeneralGCHandle = GCHandle.Alloc(SecretKey, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), SecretKey.Length);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(PublicKey);
+                SodiumSecureMemory.SecureClearBytes(SecretKey);
                 return new KeyPair(SecretKeyIntPtr, GetSecretKeyBytesLength(), PublicKeyIntPtr, GetPublicKeyBytesLength());
             }
             else 
             {
-                GCHandle MyGeneralGCHandle = GCHandle.Alloc(PublicKey, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), PublicKey.Length);
-                MyGeneralGCHandle.Free();
-                MyGeneralGCHandle = GCHandle.Alloc(SecretKey, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), SecretKey.Length);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(PublicKey);
+                SodiumSecureMemory.SecureClearBytes(SecretKey);
                 return new KeyPair(IntPtr.Zero, 0, IntPtr.Zero, 0);
             }
         }
@@ -262,12 +254,8 @@ namespace ASodium
                 MySharedSecretBox.TransferSharedSecretLength = 0;
             }
 
-            GCHandle MyGeneralGCHandle = GCHandle.Alloc(ReadSharedSecret, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), ReadSharedSecret.Length);
-            MyGeneralGCHandle.Free();
-            MyGeneralGCHandle = GCHandle.Alloc(TransferSharedSecret, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), TransferSharedSecret.Length);
-            MyGeneralGCHandle.Free();
+            SodiumSecureMemory.SecureClearBytes(ReadSharedSecret);
+            SodiumSecureMemory.SecureClearBytes(TransferSharedSecret);
 
             return MySharedSecretBox;
         }
@@ -341,12 +329,8 @@ namespace ASodium
                 MySharedSecretBox.TransferSharedSecretLength = 0;
             }
 
-            GCHandle MyGeneralGCHandle = GCHandle.Alloc(ReadSharedSecret, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), ReadSharedSecret.Length);
-            MyGeneralGCHandle.Free();
-            MyGeneralGCHandle = GCHandle.Alloc(TransferSharedSecret, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), TransferSharedSecret.Length);
-            MyGeneralGCHandle.Free();
+            SodiumSecureMemory.SecureClearBytes(ReadSharedSecret);
+            SodiumSecureMemory.SecureClearBytes(TransferSharedSecret);
 
             return MySharedSecretBox;
         }

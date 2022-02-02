@@ -38,16 +38,12 @@ namespace ASodium
             {
                 Marshal.Copy(Key, 0, KeyIntPtr, GetXSalsa20KeyBytesLength());
                 SodiumGuardedHeapAllocation.Sodium_MProtect_NoAccess(KeyIntPtr);
-                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.Length);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(Key);
                 return KeyIntPtr;
             }
             else
             {
-                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.Length);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(Key);
                 return IntPtr.Zero;
             }
         }
@@ -105,9 +101,7 @@ namespace ASodium
 
             if (ClearKey == true) 
             {
-                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.Length);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(Key);
             }
 
             return OutPut;
@@ -164,9 +158,7 @@ namespace ASodium
 
             if (ClearKey == true) 
             {
-                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.Length);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(Key);
             }
 
             return OutPut;

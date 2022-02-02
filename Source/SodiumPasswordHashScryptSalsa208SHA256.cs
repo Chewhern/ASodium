@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
-using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 
 namespace ASodium
@@ -130,9 +129,7 @@ namespace ASodium
 
             if (ClearKey == true) 
             {
-                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Password, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Password.LongLength);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(Password);
             }
 
             return DerivedKey;
@@ -207,9 +204,7 @@ namespace ASodium
 
             if (ClearKey == true) 
             {
-                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Password, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Password.LongLength);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(Password);
             }
 
             return DerivedKey;
@@ -250,9 +245,7 @@ namespace ASodium
 
             if (ClearKey == true)
             {
-                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Password, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Password.LongLength);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(Password);
             }
 
             return Encoding.UTF8.GetString(ComputedPasswordHashWithParams);
@@ -305,9 +298,7 @@ namespace ASodium
 
             if (ClearKey == true)
             {
-                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Password, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Password.LongLength);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(Password);
             }
 
             return Encoding.UTF8.GetString(ComputedPasswordHashWithParams);
@@ -342,9 +333,7 @@ namespace ASodium
 
             if (ClearKey == true)
             {
-                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Password, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Password.LongLength);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(Password);
             }
 
             if (result != 0) 

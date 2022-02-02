@@ -36,24 +36,18 @@ namespace ASodium
 
             SodiumShortHashLibrary.crypto_shorthash_keygen(Key);
 
-            GCHandle MyGeneralGCHandle = new GCHandle();
-
             Boolean IsZero = true;
             IntPtr KeyIntPtr = SodiumGuardedHeapAllocation.Sodium_Malloc(ref IsZero, GetKeyLength());
             if (IsZero == false) 
             {
                 Marshal.Copy(Key, 0, KeyIntPtr, GetKeyLength());
                 SodiumGuardedHeapAllocation.Sodium_MProtect_NoAccess(KeyIntPtr);
-                MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.Length);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(Key);
                 return KeyIntPtr;
             }
             else 
             {
-                MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.Length);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(Key);
                 return IntPtr.Zero;
             }
         }
@@ -87,9 +81,7 @@ namespace ASodium
 
             if (ClearKey == true) 
             {
-                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.Length);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(Key);
             }
 
             return ComputedHash;
@@ -124,9 +116,7 @@ namespace ASodium
 
             if (ClearKey == true) 
             {
-                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.Length);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(Key);
             }
 
             return ComputedHash;

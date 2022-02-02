@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Text;
 using System.Security.Cryptography;
-using System.Runtime.InteropServices;
 
 namespace ASodium
 {
@@ -46,9 +45,7 @@ namespace ASodium
 
             if (ClearKey == true)
             {
-                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.Length);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(Key);
             }
 
             return CipherText;
@@ -72,9 +69,7 @@ namespace ASodium
 
             if (ClearKey == true)
             {
-                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.Length);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(Key);
             }
 
             return Message;
@@ -105,9 +100,7 @@ namespace ASodium
 
             if (ClearKey == true)
             {
-                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.Length);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(Key);
             }
 
             return new DetachedBox(CipherText, MAC);
@@ -143,9 +136,7 @@ namespace ASodium
 
             if (ClearKey == true)
             {
-                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.Length);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(Key);
             }
 
             return Message;

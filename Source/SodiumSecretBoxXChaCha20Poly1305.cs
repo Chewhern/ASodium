@@ -55,9 +55,7 @@ namespace ASodium
 
             if (ClearKey == true)
             {
-                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.Length);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(Key);
             }
             return CipherText;
         }
@@ -77,9 +75,7 @@ namespace ASodium
                 throw new CryptographicException("Failed to open SecretBox");
             if (ClearKey == true)
             {
-                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.Length);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(Key);
             }
 
             return Message;
@@ -107,9 +103,7 @@ namespace ASodium
                 throw new CryptographicException("Failed to create detached SecretBox");
             if (ClearKey == true)
             {
-                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.Length);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(Key);
             }
 
             return new DetachedBox(CipherText, MAC);
@@ -142,9 +136,7 @@ namespace ASodium
                 throw new CryptographicException("Failed to open detached SecretBox");
             if (ClearKey == true)
             {
-                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.Length);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(Key);
             }
 
             return Message;

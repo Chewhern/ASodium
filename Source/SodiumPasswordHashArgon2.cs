@@ -178,9 +178,7 @@ namespace ASodium
 
             if (ClearKey == true) 
             {
-                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Password, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Password.Length);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(Password);
             }
 
             if (result != 0) 
@@ -274,13 +272,9 @@ namespace ASodium
                 result = SodiumPasswordHashArgon2Library.crypto_pwhash(DerivedKey, DerivedKeyLength, Password, Password.LongLength, Salt, OpsLimit, MemLimit, (int)Algorithm.ARGON2ID);
             }
 
-            GCHandle MyGeneralGCHandle = new GCHandle();
-
             if (ClearKey == true) 
             {
-                MyGeneralGCHandle = GCHandle.Alloc(Password, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Password.Length);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(Password);
             }
 
             if (result != 0)
@@ -294,16 +288,12 @@ namespace ASodium
             {
                 Marshal.Copy(DerivedKey, 0, DerivedKeyIntPtr, DerivedKey.Length);
                 SodiumGuardedHeapAllocation.Sodium_MProtect_NoAccess(DerivedKeyIntPtr);
-                MyGeneralGCHandle = GCHandle.Alloc(DerivedKey, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), DerivedKey.Length);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(DerivedKey);
                 return DerivedKeyIntPtr;
             }
             else 
             {
-                MyGeneralGCHandle = GCHandle.Alloc(DerivedKey, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), DerivedKey.LongLength);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(DerivedKey);
                 return IntPtr.Zero;
             }
         }
@@ -374,9 +364,7 @@ namespace ASodium
 
             if (ClearKey == true) 
             {
-                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Password, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Password.Length);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(Password);
             }
 
             if (result != 0)
@@ -451,12 +439,9 @@ namespace ASodium
                 result = SodiumPasswordHashArgon2Library.crypto_pwhash(DerivedKey, DerivedKeyLength, Password, Password.LongLength, Salt, OpsLimit, MemLimit, (int)Algorithm.ARGON2ID);
             }
 
-            GCHandle MyGeneralGCHandle = new GCHandle();
             if (ClearKey == true) 
             {
-                MyGeneralGCHandle = GCHandle.Alloc(Password, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Password.Length);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(Password);
             }
 
             if (result != 0)
@@ -470,16 +455,12 @@ namespace ASodium
             {
                 Marshal.Copy(DerivedKey, 0, DerivedKeyIntPtr, DerivedKey.Length);
                 SodiumGuardedHeapAllocation.Sodium_MProtect_NoAccess(DerivedKeyIntPtr);
-                MyGeneralGCHandle = GCHandle.Alloc(DerivedKey, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), DerivedKey.Length);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(DerivedKey);
                 return DerivedKeyIntPtr;
             }
             else
             {
-                MyGeneralGCHandle = GCHandle.Alloc(DerivedKey, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), DerivedKey.LongLength);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(DerivedKey);
                 return IntPtr.Zero;
             }
         }
@@ -526,9 +507,7 @@ namespace ASodium
 
             if (ClearKey == true) 
             {
-                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Password, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Password.Length);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(Password);
             }
 
             String HashedPasswordWithParamString = Encoding.UTF8.GetString(HashedPasswordWithParam);
@@ -599,9 +578,7 @@ namespace ASodium
 
             if (ClearKey == true) 
             {
-                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Password, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Password.Length);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(Password);
             }
 
             String HashedPasswordWithParamString = Encoding.UTF8.GetString(HashedPasswordWithParam);
@@ -639,9 +616,7 @@ namespace ASodium
 
             if (ClearKey == true) 
             {
-                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Password, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Password.LongLength);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(Password);
             }
 
             if (result == 0) 

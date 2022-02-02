@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 
 namespace ASodium
 {
@@ -52,12 +51,8 @@ namespace ASodium
         /// <summary>Clear private key and public key through cryptographically secure way.</summary>
         public void Clear()
         {
-            GCHandle MyGeneralGCHandle = GCHandle.Alloc(_privateKey, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), _privateKey.Length);
-            MyGeneralGCHandle.Free();
-            MyGeneralGCHandle = GCHandle.Alloc(_publicKey, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), _publicKey.Length);
-            MyGeneralGCHandle.Free();
+            SodiumSecureMemory.SecureClearBytes(_privateKey);
+            SodiumSecureMemory.SecureClearBytes(_publicKey);
         }
 
         private void _ProtectKey()

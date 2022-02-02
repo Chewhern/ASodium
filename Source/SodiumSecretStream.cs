@@ -59,7 +59,7 @@ namespace ASodium
             return SodiumSecretStreamLibrary.crypto_secretstream_xchacha20poly1305_headerbytes();
         }
 
-        public static SecretStreamInitPushBox SecretStreamInitPush(Byte[] KeyByte) 
+        public static SecretStreamInitPushBox SecretStreamInitPush(Byte[] KeyByte,Boolean IsClearKey=false) 
         {
             SecretStreamInitPushBox MySecretStreamInitPushBox = new SecretStreamInitPushBox();
             Byte[] StateByte = new Byte[GetStateBytesLength()];
@@ -70,6 +70,10 @@ namespace ASodium
             if (result != 0) 
             {
                 throw new Exception("Error: Failed to create SecretStreamInitPushBox");
+            }
+            if (IsClearKey == true) 
+            {
+                SodiumSecureMemory.SecureClearBytes(KeyByte);
             }
             return MySecretStreamInitPushBox;
         }

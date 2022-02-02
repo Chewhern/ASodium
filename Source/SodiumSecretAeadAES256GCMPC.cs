@@ -55,6 +55,11 @@ namespace ASodium
             return SodiumRNG.GetRandomBytes(GetNoncePublicLength());
         }
 
+        public static Byte[] GenerateSecurityNonce() 
+        {
+            return SodiumRNG.GetRandomBytes(GetNonceSecurityLength());
+        }
+
         public static Byte[] GenerateKey()
         {
             Byte[] Key = new Byte[GetKeyLength()];
@@ -67,22 +72,17 @@ namespace ASodium
             Byte[] Key = new Byte[GetKeyLength()];
             SodiumSecretAeadAES256GCMLibrary.crypto_aead_aes256gcm_keygen(Key);
             Boolean LocalIsZero = true;
-            GCHandle MyGeneralGCHandle = new GCHandle();
             IntPtr KeyIntPtr = SodiumGuardedHeapAllocation.Sodium_Malloc(ref LocalIsZero, GetKeyLength());
             if (LocalIsZero == false) 
             {
                 Marshal.Copy(Key, 0, KeyIntPtr, GetKeyLength());
                 SodiumGuardedHeapAllocation.Sodium_MProtect_ReadOnly(KeyIntPtr);
-                MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.Length);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(Key);
                 return KeyIntPtr;
             }
             else 
             {
-                MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.Length);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(Key);
                 IsZero = LocalIsZero;
                 return IntPtr.Zero;
             }
@@ -100,13 +100,10 @@ namespace ASodium
             {
                 throw new SystemException("Error: Failed to initialized state for AES256 GCM");
             }
-            GCHandle MyGeneralGCHandle;
 
             if (ClearKey == true) 
             {
-                MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.Length);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(Key);
             }
 
             return StateBytes;
@@ -125,18 +122,14 @@ namespace ASodium
                 throw new SystemException("Error: Failed to initialized state for AES256 GCM");
             }
             Boolean LocalIsZero = true;
-            GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.Length);
-            MyGeneralGCHandle.Free();
+            SodiumSecureMemory.SecureClearBytes(Key);
             IntPtr StateIntPtr = SodiumGuardedHeapAllocation.Sodium_Malloc(ref LocalIsZero, GetStateBytesLength());
             if (LocalIsZero == false) 
             {
                 Marshal.Copy(StateBytes, 0, StateIntPtr, GetStateBytesLength());
                 SodiumGuardedHeapAllocation.Sodium_MProtect_ReadOnly(StateIntPtr);
                 IsZero = LocalIsZero;
-                MyGeneralGCHandle = GCHandle.Alloc(StateBytes, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), StateBytes.Length);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(StateBytes);
                 return StateIntPtr;
             }
             else 
@@ -176,13 +169,9 @@ namespace ASodium
             }
             int result = SodiumSecretAeadAES256GCMLibrary.crypto_aead_aes256gcm_encrypt_afternm(CipherText, CipherTextLength, Message, MessageLength, AdditionalData, AdditionalDataLength, NonceSecurity, NoncePublic, StateBytes);
 
-            GCHandle MyGeneralGCHandle;
-
             if (ClearKey == true) 
             {
-                MyGeneralGCHandle = GCHandle.Alloc(StateBytes, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), StateBytes.Length);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(StateBytes);
             }
 
             if (result != 0)
@@ -223,13 +212,10 @@ namespace ASodium
 
             int result = SodiumSecretAeadAES256GCMLibrary.crypto_aead_aes256gcm_decrypt_afternm(MessageByte, MessageLength, NonceSecurity, CipherText, CipherTextLength, AdditionalData, AdditionalDataLength, NoncePublic, StateBytes);
 
-            GCHandle MyGeneralGCHandle;
 
             if (ClearKey == true) 
             {
-                MyGeneralGCHandle = GCHandle.Alloc(StateBytes, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), StateBytes.Length);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(StateBytes);
             }
 
             if (result == -1)
@@ -274,12 +260,9 @@ namespace ASodium
 
             int result = SodiumSecretAeadAES256GCMLibrary.crypto_aead_aes256gcm_encrypt_detached_afternm(CipherText, MAC, MACLength, Message, MessageLength, AdditionalData, AdditionalDataLength, NonceSecurity, NoncePublic, StateBytes);
 
-            GCHandle MyGeneralGCHandle;
             if (ClearKey == true) 
             {
-                MyGeneralGCHandle = GCHandle.Alloc(StateBytes, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), StateBytes.Length);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(StateBytes);
             }
 
             if (result != 0)
@@ -337,13 +320,9 @@ namespace ASodium
 
             int result = SodiumSecretAeadAES256GCMLibrary.crypto_aead_aes256gcm_decrypt_detached_afternm(Message, NonceSecurity, CipherText, CipherTextLength, MAC, AdditionalData, AdditionalDataLength, NoncePublic, StateBytes);
 
-            GCHandle MyGeneralGCHandle;
-
             if (ClearKey == true) 
             {
-                MyGeneralGCHandle = GCHandle.Alloc(StateBytes, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), StateBytes.Length);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(StateBytes);
             }
 
             if (result == -1)

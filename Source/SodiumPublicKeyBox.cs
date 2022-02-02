@@ -53,7 +53,6 @@ namespace ASodium
 
             SodiumPublicKeyBoxLibrary.crypto_box_keypair(PublicKey, SecretKey);
 
-            GCHandle MyGeneralGCHandle = new GCHandle();
 
             KeyPair MyKeyPair;
             Boolean IsZero1 = true;
@@ -73,13 +72,8 @@ namespace ASodium
                 MyKeyPair = new KeyPair(IntPtr.Zero, 0, IntPtr.Zero, 0);
             }
 
-            MyGeneralGCHandle = GCHandle.Alloc(SecretKey, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), SecretKey.Length);
-            MyGeneralGCHandle.Free();
-
-            MyGeneralGCHandle = GCHandle.Alloc(PublicKey, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), PublicKey.Length);
-            MyGeneralGCHandle.Free();
+            SodiumSecureMemory.SecureClearBytes(SecretKey);
+            SodiumSecureMemory.SecureClearBytes(PublicKey);
 
             SecretKeyIntPtr = IntPtr.Zero;
             PublicKeyIntPtr = IntPtr.Zero;
@@ -139,17 +133,11 @@ namespace ASodium
             Byte[] CipherText = new Byte[Message.Length + GetMACBytesLength()];
             int ret = SodiumPublicKeyBoxLibrary.crypto_box_easy(CipherText, Message, Message.Length, Nonce, OtherUserPublicKey, CurrentUserSecretKey);
 
-            GCHandle MyGeneralGCHandle = new GCHandle();
 
             if (ClearKey == true) 
             {
-                MyGeneralGCHandle = GCHandle.Alloc(CurrentUserSecretKey, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), CurrentUserSecretKey.Length);
-                MyGeneralGCHandle.Free();
-
-                MyGeneralGCHandle = GCHandle.Alloc(OtherUserPublicKey, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), OtherUserPublicKey.Length);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(CurrentUserSecretKey);
+                SodiumSecureMemory.SecureClearBytes(OtherUserPublicKey);
             }
 
             if (ret != 0)
@@ -200,16 +188,10 @@ namespace ASodium
             if (ret != 0)
                 throw new CryptographicException("Failed to open PublicKeyBox");
 
-            GCHandle MyGeneralGCHandle = new GCHandle();
             if (ClearKey == true)
             {
-                MyGeneralGCHandle = GCHandle.Alloc(CurrentUserSecretKey, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), CurrentUserSecretKey.Length);
-                MyGeneralGCHandle.Free();
-
-                MyGeneralGCHandle = GCHandle.Alloc(OtherUserPublicKey, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), OtherUserPublicKey.Length);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(CurrentUserSecretKey);
+                SodiumSecureMemory.SecureClearBytes(OtherUserPublicKey);
             }
 
             return Message;
@@ -233,17 +215,11 @@ namespace ASodium
 
             int ret = SodiumPublicKeyBoxLibrary.crypto_box_detached(CipherText, MAC, Message, Message.Length, Nonce, OtherUserPublicKey,CurrentUserSecretKey);
 
-            GCHandle MyGeneralGCHandle = new GCHandle();
 
             if (ClearKey == true)
             {
-                MyGeneralGCHandle = GCHandle.Alloc(CurrentUserSecretKey, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), CurrentUserSecretKey.Length);
-                MyGeneralGCHandle.Free();
-
-                MyGeneralGCHandle = GCHandle.Alloc(OtherUserPublicKey, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), OtherUserPublicKey.Length);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(CurrentUserSecretKey);
+                SodiumSecureMemory.SecureClearBytes(OtherUserPublicKey);
             }
 
             if (ret != 0)
@@ -275,16 +251,10 @@ namespace ASodium
             if (ret != 0)
                 throw new CryptographicException("Failed to open public detached Box");
 
-            GCHandle MyGeneralGCHandle = new GCHandle();
             if (ClearKey == true)
             {
-                MyGeneralGCHandle = GCHandle.Alloc(CurrentUserSecretKey, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), CurrentUserSecretKey.Length);
-                MyGeneralGCHandle.Free();
-
-                MyGeneralGCHandle = GCHandle.Alloc(OtherUserPublicKey, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), OtherUserPublicKey.Length);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(CurrentUserSecretKey);
+                SodiumSecureMemory.SecureClearBytes(OtherUserPublicKey);
             }
 
             return Message;

@@ -67,9 +67,7 @@ namespace ASodium
 
             if (ClearKey == true) 
             {
-                GCHandle MyGeneralGCHandle = GCHandle.Alloc(MasterKey, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), MasterKey.Length);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(MasterKey);
             }
 
             if (result == -1) 
@@ -109,12 +107,9 @@ namespace ASodium
             Byte[] SubKey = new Byte[SubKeyLength];
             int result = SodiumKDFLibrary.crypto_kdf_derive_from_key(SubKey, SubKeyLength, SubKeyID, Context, MasterKey);
 
-            GCHandle MyGeneralGCHandle = new GCHandle();
             if (ClearKey == true) 
             {
-                MyGeneralGCHandle = GCHandle.Alloc(MasterKey, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), MasterKey.Length);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(MasterKey);
             }
 
             if (result == -1)
@@ -128,16 +123,12 @@ namespace ASodium
             {
                 Marshal.Copy(SubKey, 0, SubKeyIntPtr, SubKey.Length);
                 SodiumGuardedHeapAllocation.Sodium_MProtect_NoAccess(SubKeyIntPtr);
-                MyGeneralGCHandle = GCHandle.Alloc(SubKey, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), SubKey.LongLength);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(SubKey);
                 return SubKeyIntPtr;
             }
             else 
             {
-                MyGeneralGCHandle = GCHandle.Alloc(SubKey, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), SubKey.LongLength);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(SubKey);
                 return IntPtr.Zero;
             }
         }

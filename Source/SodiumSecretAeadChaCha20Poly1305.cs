@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Security.Cryptography;
-using System.Runtime.InteropServices;
 
 namespace ASodium
 {
@@ -35,6 +34,11 @@ namespace ASodium
         public static Byte[] GeneratePublicNonce()
         {
             return SodiumRNG.GetRandomBytes(GetNoncePublicLength());
+        }
+
+        public static Byte[] GenerateSecurityNonce()
+        {
+            return SodiumRNG.GetRandomBytes(GetNonceSecurityLength());
         }
 
         public static Byte[] GenerateKey()
@@ -76,9 +80,7 @@ namespace ASodium
 
             if (ClearKey == true)
             {
-                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key,GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.Length);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(Key);
             }
 
             return CipherText;
@@ -117,9 +119,7 @@ namespace ASodium
 
             if (ClearKey == true)
             {
-                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.Length);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(Key);
             }
 
             return MessageByte;
@@ -167,9 +167,7 @@ namespace ASodium
 
             if (ClearKey == true)
             {
-                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.Length);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(Key);
             }
 
             return MyDetachedBox;
@@ -213,9 +211,7 @@ namespace ASodium
 
             if (ClearKey == true)
             {
-                GCHandle MyGeneralGCHandle = GCHandle.Alloc(Key, GCHandleType.Pinned);
-                SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Key.Length);
-                MyGeneralGCHandle.Free();
+                SodiumSecureMemory.SecureClearBytes(Key);
             }
 
             return Message;

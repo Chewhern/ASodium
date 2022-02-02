@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Security.Cryptography;
-using System.Runtime.InteropServices;
 
 namespace ASodium
 {
@@ -74,10 +73,6 @@ namespace ASodium
                 throw new CryptographicException("Error: Failed to update state");
             }
 
-            GCHandle MyGeneralGCHandle = GCHandle.Alloc(State, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), State.LongLength);
-            MyGeneralGCHandle.Free();
-
             return NewState;
         }
 
@@ -103,10 +98,6 @@ namespace ASodium
             {
                 throw new CryptographicException("Fail to compute hash for finalized state");
             }
-
-            GCHandle MyGeneralGCHandle = GCHandle.Alloc(State, GCHandleType.Pinned);
-            SodiumSecureMemory.MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), State.LongLength);
-            MyGeneralGCHandle.Free();
 
             return ComputedHash;
         }
