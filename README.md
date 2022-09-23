@@ -7,4 +7,6 @@ To verify the DLL downloaded from Nuget, developer are advised to verify the DLL
 
 Read changelog for more details.
 
+Wiki(In Progress) will be used as API documentation, for now please **avoid using** any **functions** that has **String** or **Char** names on them in **SodiumSecureMemory**.
+
 This is a new binding, there'll be unforeseen bugs please report to me and I'll see what I can do.
