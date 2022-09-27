@@ -20,7 +20,7 @@
 0.5.3 version\
 -> Removed unnecessary code\
 -> MAC in Salsa20Poly1305,ChaCha20Poly1305 and ChaCha20IETFPoly1305 in SodiumSecretBox no longer uses **System.Linq** \
-and it uses **sodium_memcpm** to do the comparison with the MAC attached in the message.\
+and it uses **sodium_memcmp** to do the comparison with the MAC attached in the message.\
 -> **SodiumSecureMemory.SecureClearBytes()** replaces all the sensitive key clearing function in ASodium as the code is shorter while doing its job.\
 -> State clearing in several cryptographic functions were removed as it's uncertain they're sensitive or will cause troubles to the library(libsodium).
 
