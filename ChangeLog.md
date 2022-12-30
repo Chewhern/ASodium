@@ -31,7 +31,7 @@ and it uses **sodium_memcmp** to do the comparison with the MAC attached in the 
 -> Slight rework on **RevampedKeyPair** object.\
 -> All sorts of detached box has been removed and uses only **DetachedBox** object\
 -> Wiki is now available\
--> **Dropped support for .Net Framework**
+-> **Dropped support for .Net Framework**\
 -> minor bug fixes on StreamCipherSalsa20
 
 ## Note(.Net Framework)
