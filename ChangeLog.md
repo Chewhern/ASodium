@@ -26,11 +26,12 @@ and it uses **sodium_memcmp** to do the comparison with the MAC attached in the 
 
 0.5.4 version\
 -> Removed unnecessary code\
--> Added support for Salsa20 12 rounds and 8 rounds operations within the wrapper library.
--> Added support for PRF which sources from libsodium library.
--> Slight rework on **RevampedKeyPair** object.
--> All sorts of detached box has been removed and uses only **DetachedBox** object
--> Wiki is now available
+-> Added support for Salsa20 12 rounds and 8 rounds operations within the wrapper library.\
+-> Added support for PRF which sources from libsodium library.\
+-> Slight rework on **RevampedKeyPair** object.\
+-> All sorts of detached box has been removed and uses only **DetachedBox** object\
+-> Wiki is now available\
+-> **Dropped support for .Net Framework**
 
 ## Note(.Net Framework)
 If you are developing for .Net Framework 4.8 or 4.7.2, you are required to put the dll(libsodium) into the application folder else it won't work
