@@ -34,6 +34,15 @@ and it uses **sodium_memcmp** to do the comparison with the MAC attached in the 
 -> **Dropped support for .Net Framework**\
 -> minor bug fixes on StreamCipherSalsa20
 
+0.5.5 version\
+-> Changed some exception message\
+-> Added Experimental Domain Separation Stream Cipher\
+-> Dropped support for .NetCoreApp\
+
+0.5.6 version(Incoming)\
+-> Expose Argon2 native API\
+-> Expose SealedBox XChaCha20Poly1305 native API
+
 ## Note(.Net Framework)
 If you are developing for .Net Framework 4.8 or 4.7.2, you are required to put the dll(libsodium) into the application folder else it won't work
 
