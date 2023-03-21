@@ -47,11 +47,11 @@ namespace ASodium
             return CipherTextWithMAC;
         }
 
-        public static Byte[] Open(Byte[] OriginalCipherText, Byte[] Nonce, Byte[] Key, Boolean ClearKey = false)
+        public static Byte[] Open(Byte[] CipherTextWithMAC, Byte[] Nonce, Byte[] Key, Boolean ClearKey = false)
         {
-            if (OriginalCipherText == null || OriginalCipherText.Length == 0)
+            if (CipherTextWithMAC == null || CipherTextWithMAC.Length == 0)
             {
-                throw new ArgumentException("Error: Original cipher text can't be null or empty");
+                throw new ArgumentException("Error: Cipher text with MAC can't be null or empty");
             }
             if (Nonce == null)
             {
@@ -71,9 +71,9 @@ namespace ASodium
             }
             Byte[] Poly1305MAC = new Byte[SodiumOneTimeAuth.GetPoly1305MACLength()];
             Byte[] TestPoly1305MAC = new Byte[SodiumOneTimeAuth.GetPoly1305MACLength()];
-            Byte[] CipherText = new Byte[OriginalCipherText.Length - Poly1305MAC.Length];
-            Array.Copy(OriginalCipherText, 0, Poly1305MAC, 0, Poly1305MAC.Length);
-            Array.Copy(OriginalCipherText, Poly1305MAC.Length, CipherText, 0, CipherText.Length);
+            Byte[] CipherText = new Byte[CipherTextWithMAC.Length - Poly1305MAC.Length];
+            Array.Copy(CipherTextWithMAC, 0, Poly1305MAC, 0, Poly1305MAC.Length);
+            Array.Copy(CipherTextWithMAC, Poly1305MAC.Length, CipherText, 0, CipherText.Length);
             TestPoly1305MAC = SodiumOneTimeAuth.ComputePoly1305MAC(CipherText, Key);
             GCHandle Poly1305MACGCHandle = GCHandle.Alloc(Poly1305MAC, GCHandleType.Pinned);
             GCHandle TestPoly1305MACGCHandle = GCHandle.Alloc(TestPoly1305MAC, GCHandleType.Pinned);
@@ -83,7 +83,7 @@ namespace ASodium
             }
             catch 
             {
-                throw new CryptographicException("Error: Message has been tampered with");
+                throw new CryptographicException("Error: Cipher text has been tampered with");
             }
             Poly1305MACGCHandle.Free();
             TestPoly1305MACGCHandle.Free();
