@@ -40,7 +40,6 @@ and it uses **sodium_memcmp** to do the comparison with the MAC attached in the 
 -> Dropped support for .NetCoreApp\
 
 0.5.6 version(Incoming)\
--> Expose Argon2 native API\
 -> Expose SealedBox XChaCha20Poly1305 native API\
 -> Expose Public Key Box XChaCha20Poly1305 native API\
 -> Remove Experimental Domain Separation in ASodium
