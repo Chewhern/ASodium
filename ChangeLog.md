@@ -38,12 +38,14 @@ and it uses **sodium_memcmp** to do the comparison with the MAC attached in the 
 -> Changed some exception message\
 -> Added Experimental Domain Separation Stream Cipher\
 -> Dropped support for .NetCoreApp\
+-> From this version and onwards, there'll be no more DLL verifications
 
 0.5.6 version\
 -> Expose SealedBox XChaCha20Poly1305 native API\
 -> Expose Public Key Box XChaCha20Poly1305 native API\
 -> Expose Seeded KeyPair generation in Public Key Box and Public Key Auth\
--> Remove Experimental Domain Separation in ASodium
+-> Remove Experimental Domain Separation in ASodium\
+-> If people would like to have domain separation, kindly head to my simplesofthsm for details.
 
 ## Note(.Net Framework)
 If you are developing for .Net Framework 4.8 or 4.7.2, you are required to put the dll(libsodium) into the application folder else it won't work
