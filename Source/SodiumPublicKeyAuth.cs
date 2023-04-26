@@ -78,6 +78,69 @@ namespace ASodium
             return MyKeyPair;
         }
 
+        public static KeyPair GenerateSeededKeyPair(Byte[] Seed)
+        {
+            if (Seed == null) 
+            {
+                throw new ArgumentException("Error:Seed must not be null");
+            }
+            if (Seed.Length != GetSeedBytesLength()) 
+            {
+                throw new ArgumentException("Error:Seed length must be " + GetSeedBytesLength() + " bytes");
+            }
+            Byte[] PublicKey = new Byte[GetPublicKeyBytesLength()];
+            Byte[] SecretKey = new Byte[GetSecretKeyBytesLength()];
+
+            SodiumPublicKeyAuthLibrary.crypto_sign_seed_keypair(PublicKey, SecretKey,Seed);
+
+            KeyPair MyKeyPair;
+            Boolean IsZero1 = true;
+            Boolean IsZero2 = true;
+            IntPtr PublicKeyIntPtr = SodiumGuardedHeapAllocation.Sodium_Malloc(ref IsZero1, GetPublicKeyBytesLength());
+            IntPtr SecretKeyIntPtr = SodiumGuardedHeapAllocation.Sodium_Malloc(ref IsZero2, GetSecretKeyBytesLength());
+            if (IsZero1 == false && IsZero2 == false)
+            {
+                Marshal.Copy(PublicKey, 0, PublicKeyIntPtr, PublicKey.Length);
+                Marshal.Copy(SecretKey, 0, SecretKeyIntPtr, SecretKey.Length);
+                SodiumGuardedHeapAllocation.Sodium_MProtect_NoAccess(PublicKeyIntPtr);
+                SodiumGuardedHeapAllocation.Sodium_MProtect_NoAccess(SecretKeyIntPtr);
+                MyKeyPair = new KeyPair(SecretKeyIntPtr, SecretKey.Length, PublicKeyIntPtr, PublicKey.Length);
+            }
+            else
+            {
+                MyKeyPair = new KeyPair(IntPtr.Zero, 0, IntPtr.Zero, 0);
+            }
+
+            SodiumSecureMemory.SecureClearBytes(SecretKey);
+            SodiumSecureMemory.SecureClearBytes(PublicKey);
+
+            SecretKeyIntPtr = IntPtr.Zero;
+            PublicKeyIntPtr = IntPtr.Zero;
+
+            return MyKeyPair;
+        }
+
+        public static RevampedKeyPair GenerateSeededRevampedKeyPair(Byte[] Seed)
+        {
+            if (Seed == null)
+            {
+                throw new ArgumentException("Error:Seed must not be null");
+            }
+            if (Seed.Length != GetSeedBytesLength())
+            {
+                throw new ArgumentException("Error:Seed length must be " + GetSeedBytesLength() + " bytes");
+            }
+
+            Byte[] PublicKey = new Byte[GetPublicKeyBytesLength()];
+            Byte[] SecretKey = new Byte[GetSecretKeyBytesLength()];
+
+            SodiumPublicKeyAuthLibrary.crypto_sign_seed_keypair(PublicKey, SecretKey,Seed);
+
+            RevampedKeyPair MyKeyPair = new RevampedKeyPair(PublicKey, SecretKey);
+
+            return MyKeyPair;
+        }
+
         public static Byte[] Sign(Byte[] Message,Byte[] SecretKey, Boolean ClearKey = false) 
         {
             if (Message == null) 

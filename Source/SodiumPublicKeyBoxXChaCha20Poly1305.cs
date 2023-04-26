@@ -1,57 +1,57 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 using System.Security.Cryptography;
+using System.Runtime.InteropServices;
 
 namespace ASodium
 {
-    public static class SodiumPublicKeyBox
+    public static class SodiumPublicKeyBoxXChaCha20Poly1305
     {
-        public static int GetSeedBytesLength() 
+        public static int GetSeedBytesLength()
         {
-            return SodiumPublicKeyBoxLibrary.crypto_box_seedbytes();
+            return SodiumPublicKeyBoxXChaCha20Poly1305Library.crypto_box_curve25519xchacha20poly1305_seedbytes();
         }
 
-        public static int GetPublicKeyBytesLength() 
+        public static int GetPublicKeyBytesLength()
         {
-            return SodiumPublicKeyBoxLibrary.crypto_box_publickeybytes();
+            return SodiumPublicKeyBoxXChaCha20Poly1305Library.crypto_box_curve25519xchacha20poly1305_publickeybytes();
         }
 
-        public static int GetSecretKeyBytesLength() 
+        public static int GetSecretKeyBytesLength()
         {
-            return SodiumPublicKeyBoxLibrary.crypto_box_secretkeybytes();
+            return SodiumPublicKeyBoxXChaCha20Poly1305Library.crypto_box_curve25519xchacha20poly1305_secretkeybytes();
         }
 
-        public static int GetBeforeNMBytesLength() 
+        public static int GetBeforeNMBytesLength()
         {
-            return SodiumPublicKeyBoxLibrary.crypto_box_beforenmbytes();
+            return SodiumPublicKeyBoxXChaCha20Poly1305Library.crypto_box_curve25519xchacha20poly1305_beforenmbytes();
         }
 
-        public static int GetNonceBytesLength() 
+        public static int GetNonceBytesLength()
         {
-            return SodiumPublicKeyBoxLibrary.crypto_box_noncebytes();
+            return SodiumPublicKeyBoxXChaCha20Poly1305Library.crypto_box_curve25519xchacha20poly1305_noncebytes();
         }
 
-        public static int GetBoxZeroBytesLength() 
+        public static int GetBoxZeroBytesLength()
         {
-            return SodiumPublicKeyBoxLibrary.crypto_box_boxzerobytes();
+            return SodiumPublicKeyBoxXChaCha20Poly1305Library.crypto_box_curve25519xchacha20poly1305_boxzerobytes();
         }
 
-        public static int GetMACBytesLength() 
+        public static int GetMACBytesLength()
         {
-            return SodiumPublicKeyBoxLibrary.crypto_box_macbytes();
+            return SodiumPublicKeyBoxXChaCha20Poly1305Library.crypto_box_curve25519xchacha20poly1305_macbytes();
         }
 
-        public static long GetMaxMessageBytesLength() 
+        public static long GetMaxMessageBytesLength()
         {
-            return SodiumPublicKeyBoxLibrary.crypto_box_messagebytes_max();
+            return SodiumPublicKeyBoxXChaCha20Poly1305Library.crypto_box_curve25519xchacha20poly1305_messagebytes_max();
         }
 
-        public static KeyPair GenerateKeyPair() 
+        public static KeyPair GenerateKeyPair()
         {
             Byte[] PublicKey = new Byte[GetPublicKeyBytesLength()];
             Byte[] SecretKey = new Byte[GetSecretKeyBytesLength()];
 
-            SodiumPublicKeyBoxLibrary.crypto_box_keypair(PublicKey, SecretKey);
+            SodiumPublicKeyBoxXChaCha20Poly1305Library.crypto_box_curve25519xchacha20poly1305_keypair(PublicKey, SecretKey);
 
 
             KeyPair MyKeyPair;
@@ -81,12 +81,12 @@ namespace ASodium
             return MyKeyPair;
         }
 
-        public static RevampedKeyPair GenerateRevampedKeyPair() 
+        public static RevampedKeyPair GenerateRevampedKeyPair()
         {
             Byte[] PublicKey = new Byte[GetPublicKeyBytesLength()];
             Byte[] SecretKey = new Byte[GetSecretKeyBytesLength()];
 
-            SodiumPublicKeyBoxLibrary.crypto_box_keypair(PublicKey, SecretKey);
+            SodiumPublicKeyBoxXChaCha20Poly1305Library.crypto_box_curve25519xchacha20poly1305_keypair(PublicKey, SecretKey);
 
             RevampedKeyPair MyKeyPair = new RevampedKeyPair(PublicKey, SecretKey);
 
@@ -107,7 +107,7 @@ namespace ASodium
             Byte[] PublicKey = new Byte[GetPublicKeyBytesLength()];
             Byte[] SecretKey = new Byte[GetSecretKeyBytesLength()];
 
-            SodiumPublicKeyBoxLibrary.crypto_box_seed_keypair(PublicKey, SecretKey,Seed);
+            SodiumPublicKeyBoxXChaCha20Poly1305Library.crypto_box_curve25519xchacha20poly1305_seed_keypair(PublicKey, SecretKey, Seed);
 
             KeyPair MyKeyPair;
             Boolean IsZero1 = true;
@@ -150,43 +150,43 @@ namespace ASodium
             Byte[] PublicKey = new Byte[GetPublicKeyBytesLength()];
             Byte[] SecretKey = new Byte[GetSecretKeyBytesLength()];
 
-            SodiumPublicKeyBoxLibrary.crypto_box_seed_keypair(PublicKey, SecretKey,Seed);
+            SodiumPublicKeyBoxXChaCha20Poly1305Library.crypto_box_curve25519xchacha20poly1305_seed_keypair(PublicKey, SecretKey, Seed);
 
             RevampedKeyPair MyKeyPair = new RevampedKeyPair(PublicKey, SecretKey);
 
             return MyKeyPair;
         }
 
-        public static Byte[] GenerateNonce() 
+        public static Byte[] GenerateNonce()
         {
             return SodiumRNG.GetRandomBytes(GetNonceBytesLength());
         }
 
-        public static Byte[] GeneratePublicKey(Byte[] SecretKey,Boolean ClearKey = false) 
+        public static Byte[] GeneratePublicKey(Byte[] SecretKey, Boolean ClearKey = false)
         {
             Byte[] PublicKey = SodiumScalarMult.Base(SecretKey, ClearKey);
 
             return PublicKey;
         }
 
-        public static Byte[] GenerateSharedSecret(Byte[] CurrentUserSecretKey,Byte[] OtherUserPublicKey,Boolean ClearKey = false) 
+        public static Byte[] GenerateSharedSecret(Byte[] CurrentUserSecretKey, Byte[] OtherUserPublicKey, Boolean ClearKey = false)
         {
             Byte[] SharedSecret = SodiumScalarMult.Mult(CurrentUserSecretKey, OtherUserPublicKey, ClearKey);
 
             return SharedSecret;
         }
 
-        public static IntPtr GenerateSharedSecretIntPtr(Byte[] CurrentUserSecretKey,Byte[] OtherUserPublicKey,Boolean ClearKey = false) 
+        public static IntPtr GenerateSharedSecretIntPtr(Byte[] CurrentUserSecretKey, Byte[] OtherUserPublicKey, Boolean ClearKey = false)
         {
             IntPtr SharedSecret = SodiumScalarMult.MultIntPtr(CurrentUserSecretKey, OtherUserPublicKey, ClearKey);
 
             return SharedSecret;
         }
 
-        public static Byte[] Create(Byte[] Message, Byte[] Nonce, Byte[] CurrentUserSecretKey, Byte[] OtherUserPublicKey,Boolean ClearKey=false) 
+        public static Byte[] Create(Byte[] Message, Byte[] Nonce, Byte[] CurrentUserSecretKey, Byte[] OtherUserPublicKey, Boolean ClearKey = false)
         {
             if (CurrentUserSecretKey == null || CurrentUserSecretKey.Length != GetSecretKeyBytesLength())
-                throw new ArgumentException("Error: Secret key must be "+GetSecretKeyBytesLength()+" bytes in length");
+                throw new ArgumentException("Error: Secret key must be " + GetSecretKeyBytesLength() + " bytes in length");
 
             if (OtherUserPublicKey == null || OtherUserPublicKey.Length != GetPublicKeyBytesLength())
                 throw new ArgumentException("Error: Public key must be " + GetPublicKeyBytesLength() + " bytes in length");
@@ -195,10 +195,10 @@ namespace ASodium
                 throw new ArgumentException("Error: Nonce must be " + GetNonceBytesLength() + " bytes in length");
 
             Byte[] CipherText = new Byte[Message.Length + GetMACBytesLength()];
-            int ret = SodiumPublicKeyBoxLibrary.crypto_box_easy(CipherText, Message, Message.Length, Nonce, OtherUserPublicKey, CurrentUserSecretKey);
+            int ret = SodiumPublicKeyBoxXChaCha20Poly1305Library.crypto_box_curve25519xchacha20poly1305_easy(CipherText, Message, Message.Length, Nonce, OtherUserPublicKey, CurrentUserSecretKey);
 
 
-            if (ClearKey == true) 
+            if (ClearKey == true)
             {
                 SodiumSecureMemory.SecureClearBytes(CurrentUserSecretKey);
                 SodiumSecureMemory.SecureClearBytes(OtherUserPublicKey);
@@ -210,7 +210,7 @@ namespace ASodium
             return CipherText;
         }
 
-        public static Byte[] Open(Byte[] CipherText, Byte[] Nonce, Byte[] CurrentUserSecretKey, Byte[] OtherUserPublicKey,Boolean ClearKey=false)
+        public static Byte[] Open(Byte[] CipherText, Byte[] Nonce, Byte[] CurrentUserSecretKey, Byte[] OtherUserPublicKey, Boolean ClearKey = false)
         {
             if (CurrentUserSecretKey == null || CurrentUserSecretKey.Length != GetSecretKeyBytesLength())
                 throw new ArgumentException("Error: Secret key must be " + GetSecretKeyBytesLength() + " bytes in length");
@@ -247,7 +247,7 @@ namespace ASodium
             }
 
             Byte[] Message = new Byte[CipherText.Length - GetMACBytesLength()];
-            int ret = SodiumPublicKeyBoxLibrary.crypto_box_open_easy(Message, CipherText, CipherText.Length, Nonce, OtherUserPublicKey, CurrentUserSecretKey);
+            int ret = SodiumPublicKeyBoxXChaCha20Poly1305Library.crypto_box_curve25519xchacha20poly1305_open_easy(Message, CipherText, CipherText.Length, Nonce, OtherUserPublicKey, CurrentUserSecretKey);
 
             if (ret != 0)
                 throw new CryptographicException("Failed to open PublicKeyBox");
@@ -277,7 +277,7 @@ namespace ASodium
             Byte[] CipherText = new Byte[Message.LongLength];
             Byte[] MAC = new byte[GetMACBytesLength()];
 
-            int ret = SodiumPublicKeyBoxLibrary.crypto_box_detached(CipherText, MAC, Message, Message.Length, Nonce, OtherUserPublicKey,CurrentUserSecretKey);
+            int ret = SodiumPublicKeyBoxXChaCha20Poly1305Library.crypto_box_curve25519xchacha20poly1305_detached(CipherText, MAC, Message, Message.Length, Nonce, OtherUserPublicKey, CurrentUserSecretKey);
 
 
             if (ClearKey == true)
@@ -294,7 +294,7 @@ namespace ASodium
             return MyDetachedBox;
         }
 
-        public static byte[] OpenDetached(Byte[] CipherText, Byte[] MAC, Byte[] Nonce, Byte[] CurrentUserSecretKey, Byte[] OtherUserPublicKey,Boolean ClearKey=false)
+        public static byte[] OpenDetached(Byte[] CipherText, Byte[] MAC, Byte[] Nonce, Byte[] CurrentUserSecretKey, Byte[] OtherUserPublicKey, Boolean ClearKey = false)
         {
             if (CurrentUserSecretKey == null || CurrentUserSecretKey.Length != GetSecretKeyBytesLength())
                 throw new ArgumentException("Error: Secret key must be " + GetSecretKeyBytesLength() + " bytes in length");
@@ -306,10 +306,10 @@ namespace ASodium
                 throw new ArgumentException("Error: Nonce must be " + GetNonceBytesLength() + " bytes in length");
 
             if (MAC == null || MAC.Length != GetMACBytesLength())
-                throw new ArgumentException("Error: MAC must be "+GetMACBytesLength()+" bytes in length");
+                throw new ArgumentException("Error: MAC must be " + GetMACBytesLength() + " bytes in length");
 
             Byte[] Message = new Byte[CipherText.Length];
-            int ret = SodiumPublicKeyBoxLibrary.crypto_box_open_detached(Message, CipherText, MAC, CipherText.Length, Nonce, OtherUserPublicKey,CurrentUserSecretKey);
+            int ret = SodiumPublicKeyBoxXChaCha20Poly1305Library.crypto_box_curve25519xchacha20poly1305_open_detached(Message, CipherText, MAC, CipherText.Length, Nonce, OtherUserPublicKey, CurrentUserSecretKey);
 
             if (ret != 0)
                 throw new CryptographicException("Failed to open public detached Box");
