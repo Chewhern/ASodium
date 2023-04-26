@@ -39,9 +39,10 @@ and it uses **sodium_memcmp** to do the comparison with the MAC attached in the 
 -> Added Experimental Domain Separation Stream Cipher\
 -> Dropped support for .NetCoreApp\
 
-0.5.6 version(Incoming)\
+0.5.6 version\
 -> Expose SealedBox XChaCha20Poly1305 native API\
 -> Expose Public Key Box XChaCha20Poly1305 native API\
+-> Expose Seeded KeyPair generation in Public Key Box and Public Key Auth\
 -> Remove Experimental Domain Separation in ASodium
 
 ## Note(.Net Framework)
