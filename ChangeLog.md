@@ -47,6 +47,10 @@ and it uses **sodium_memcmp** to do the comparison with the MAC attached in the 
 -> Remove Experimental Domain Separation in ASodium\
 -> If people would like to have domain separation, kindly head to my simplesofthsm for details.
 
+0.5.7 version\
+-> Added **Aegis-128L** native API\
+-> Added **Aegis-256L** native API
+
 ## Note(.Net Framework)
 If you are developing for .Net Framework 4.8 or 4.7.2, you are required to put the dll(libsodium) into the application folder else it won't work
 
