@@ -85,11 +85,6 @@ namespace ASodium
 
         public static Byte[] Encrypt(Byte[] Message, Byte[] NoncePublic, Byte[] Key, Byte[] AdditionalData = null, Byte[] NonceSecurity = null,Boolean ClearKey=false)
         {
-            if (IsAES256GCMAvailable()==false) 
-            {
-                throw new SystemException("Error: Accelerated AES256GCM is not supported in this machine..");
-            }
-
             Byte[] CipherText = new Byte[Message.LongLength + GetABytesLength()];
             long CipherTextLength = 0;
             long MessageLength = Message.LongLength;
@@ -128,11 +123,6 @@ namespace ASodium
 
         public static Byte[] Decrypt(Byte[] CipherText, Byte[] NoncePublic, Byte[] Key, Byte[] AdditionalData = null, Byte[] NonceSecurity = null,Boolean ClearKey=false)
         {
-            if (IsAES256GCMAvailable() == false)
-            {
-                throw new SystemException("Error: Accelerated AES256GCM is not supported in this machine..");
-            }
-
             Byte[] MessageByte = new Byte[CipherText.LongLength - GetABytesLength()];
             long MessageLength = 0;
             long CipherTextLength = CipherText.LongLength;
@@ -172,11 +162,6 @@ namespace ASodium
 
         public static DetachedBox CreateDetachedBox(Byte[] Message, Byte[] NoncePublic, Byte[] Key, Byte[] NonceSecurity = null, Byte[] AdditionalData = null,Boolean ClearKey=false)
         {
-            if (IsAES256GCMAvailable() == false)
-            {
-                throw new SystemException("Error: Accelerated AES256GCM is not supported in this machine..");
-            }
-
             DetachedBox MyDetachedBox = new DetachedBox();
             Byte[] CipherText = new Byte[Message.LongLength];
             Byte[] MAC = new Byte[GetABytesLength()];
@@ -222,21 +207,11 @@ namespace ASodium
 
         public static Byte[] OpenDetachedBox(DetachedBox MyDetachedBox, Byte[] NoncePublic, Byte[] Key, Byte[] AdditionalData = null, Byte[] NonceSecurity = null,Boolean ClearKey=false)
         {
-            if (IsAES256GCMAvailable() == false)
-            {
-                throw new SystemException("Error: Accelerated AES256GCM is not supported in this machine..");
-            }
-
             return OpenDetachedBox(MyDetachedBox.CipherText, MyDetachedBox.Mac, NoncePublic, Key, AdditionalData, NonceSecurity,ClearKey);
         }
 
         public static Byte[] OpenDetachedBox(Byte[] CipherText, Byte[] MAC, Byte[] NoncePublic, Byte[] Key, Byte[] AdditionalData = null, Byte[] NonceSecurity = null,Boolean ClearKey=false)
         {
-            if (IsAES256GCMAvailable() == false)
-            {
-                throw new SystemException("Error: Accelerated AES256GCM is not supported in this machine..");
-            }
-
             Byte[] Message = new Byte[CipherText.LongLength];
             long CipherTextLength = CipherText.LongLength;
             long AdditionalDataLength = 0;
