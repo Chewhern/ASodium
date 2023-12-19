@@ -51,6 +51,10 @@ and it uses **sodium_memcmp** to do the comparison with the MAC attached in the 
 -> Added **Aegis-128L** native API\
 -> Added **Aegis-256L** native API
 
+0.5.8 version\
+-> Removed hardware checkers on AES256GCM and AES256GCMPC
+-> Switched to **.Net 6** and now extends support to **.Net Standard 2.0**
+
 ## Note(.Net Framework)
 If you are developing for .Net Framework 4.8 or 4.7.2, you are required to put the dll(libsodium) into the application folder else it won't work
 
