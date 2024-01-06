@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net6.0;netstandard2.0</TargetFrameworks>
+    <Authors>Chew Lik Hern</Authors>
+    <Version>0.5.8.0</Version>
+    <AssemblyName>ASodium</AssemblyName>
+    <PackageId>ASodium</PackageId>
+    <PackageTags>libsodium</PackageTags>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/Chewhern/ASodium</RepositoryUrl>
+    <OutputType>Library</OutputType>
+    <PackageProjectUrl>https://github.com/Chewhern/ASodium</PackageProjectUrl>
+    <PackageIconUrl>http://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Salt_shaker_on_white_background.jpg/220px-Salt_shaker_on_white_background.jpg</PackageIconUrl>
+    <PreserveCompilationContext>true</PreserveCompilationContext>
+    <Description>libsodium for .net</Description>
+    <AssemblyVersion>0.5.8.0</AssemblyVersion>
+    <FileVersion>0.5.8.0</FileVersion>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="libsodium" Version="1.0.19" />
+  </ItemGroup>
+
+</Project>
