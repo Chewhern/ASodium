@@ -19,5 +19,14 @@ namespace ASodium
 
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
         internal static extern int sodium_munlock(IntPtr Destination, long Length);
+
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void sodium_memzero(Byte[] Destination, long Length);
+
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern int sodium_mlock(Byte[] Destination, long Length);
+
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern int sodium_munlock(Byte[] Destination, long Length);
     }
 }
