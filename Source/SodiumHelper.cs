@@ -5,12 +5,20 @@ namespace ASodium
 {
     public static class SodiumHelper
     {
-        public static void Sodium_Memory_Compare(IntPtr ByteArray1IntPtr, IntPtr ByteArray2IntPtr, int BytesArrayMutualSize) 
+        public static void Sodium_Memory_Compare(Byte[] ByteArray1, Byte[] ByteArray2) 
         {
-            int result=SodiumHelperLibrary.sodium_memcmp(ByteArray1IntPtr, ByteArray2IntPtr, BytesArrayMutualSize);
+            if (ByteArray1 == null || ByteArray2 == null) 
+            {
+                throw new ArgumentException("Error: ByteArray1 and ByteArray2 must not be null");
+            }
+            if (ByteArray1.Length != ByteArray2.Length) 
+            {
+                throw new ArgumentException("Error: ByteArray1 and ByteArray2 must be the same length in bytes");
+            }
+            int result=SodiumHelperLibrary.sodium_memcmp(ByteArray1, ByteArray2, ByteArray1.LongLength);
             if (result == -1) 
             {
-                throw new Exception("Error: The bytes array store in respective pointer does not match.");
+                throw new Exception("Error: Two bytes array does not match.");
             }
         }
 
@@ -161,9 +169,9 @@ namespace ASodium
             return ResultUnsignedNumber;
         }
 
-        public static int Sodium_Compare(IntPtr NumberInByteArray1IntPtr, IntPtr NumberInByteArray2IntPtr, int BytesArrayMutualSize) 
+        public static int Sodium_Compare(Byte[] NumberInByteArray1, Byte[] NumberInByteArray2) 
         {
-            return SodiumHelperLibrary.sodium_compare(NumberInByteArray1IntPtr, NumberInByteArray2IntPtr, BytesArrayMutualSize);
+            return SodiumHelperLibrary.sodium_compare(NumberInByteArray1, NumberInByteArray2,NumberInByteArray1.LongLength);
         }
 
         public static int Sodium_Is_Zero(Byte[] Data) 

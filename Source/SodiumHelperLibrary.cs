@@ -12,7 +12,7 @@ namespace ASodium
         #endif
 
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern int sodium_memcmp(IntPtr ByteArray1IntPtr,IntPtr ByteArray2IntPtr, int BytesArrayMutualSize);
+        internal static extern int sodium_memcmp(Byte[] ByteArray1,Byte[] ByteArray2, long BytesArrayMutualSize);
 
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
         internal static extern IntPtr sodium_bin2hex(Byte[] Hex, int hexMaxlen, Byte[] bin, int binLen);
@@ -39,7 +39,7 @@ namespace ASodium
         internal static extern void sodium_sub(Byte[] NumberByte1, Byte[] NumberByte2, int NumberBytesMutualLength);
 
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern int sodium_compare(IntPtr ByteArray1IntPtr, IntPtr ByteArray2IntPtr, int NumberBytesMutualLength);
+        internal static extern int sodium_compare(Byte[] ByteArray1, Byte[] ByteArray2, long NumberBytesMutualLength);
 
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
         internal static extern int sodium_is_zero(Byte[] Data, int DataLength);

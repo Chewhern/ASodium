@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>net6.0;netstandard2.0</TargetFrameworks>
     <Authors>Chew Lik Hern</Authors>
-    <Version>0.5.9.0</Version>
+    <Version>0.6.0.0</Version>
     <AssemblyName>ASodium</AssemblyName>
     <PackageId>ASodium</PackageId>
     <PackageTags>libsodium</PackageTags>

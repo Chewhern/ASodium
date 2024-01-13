@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Security.Cryptography;
-using System.Runtime.InteropServices;
 
 namespace ASodium
 {
@@ -75,18 +74,14 @@ namespace ASodium
             Array.Copy(CipherTextWithMAC, 0, Poly1305MAC, 0, Poly1305MAC.Length);
             Array.Copy(CipherTextWithMAC, Poly1305MAC.Length, CipherText, 0, CipherText.Length);
             TestPoly1305MAC = SodiumOneTimeAuth.ComputePoly1305MAC(CipherText, Key);
-            GCHandle Poly1305MACGCHandle = GCHandle.Alloc(Poly1305MAC, GCHandleType.Pinned);
-            GCHandle TestPoly1305MACGCHandle = GCHandle.Alloc(TestPoly1305MAC, GCHandleType.Pinned);
             try
             {
-                SodiumHelper.Sodium_Memory_Compare(Poly1305MACGCHandle.AddrOfPinnedObject(), TestPoly1305MACGCHandle.AddrOfPinnedObject(), Poly1305MAC.Length);
+                SodiumHelper.Sodium_Memory_Compare(Poly1305MAC, TestPoly1305MAC);
             }
             catch
             {
                 throw new CryptographicException("Error: Cipher text has been tampered with");
             }
-            Poly1305MACGCHandle.Free();
-            TestPoly1305MACGCHandle.Free();
             Byte[] DecryptedMessage = SodiumStreamCipherChaCha20.ChaCha20IETFDecrypt(CipherText, Nonce, Key, ClearKey);
 
             return DecryptedMessage;
