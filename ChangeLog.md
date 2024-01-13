@@ -59,6 +59,12 @@ and it uses **sodium_memcmp** to do the comparison with the MAC attached in the 
 -> For details kindly refer to https://github.com/Chewhern/ASodium/blob/main/Source/SodiumSecureMemory.cs \
 -> and https://github.com/Chewhern/ASodium/blob/main/Source/SodiumSecureMemoryLibrary.cs
 
+0.6.0 version\
+-> **sodium_memcmp** and **sodium_compare** have changed the input data types from **IntPtr** to **Byte[]**.\
+-> Sodium_Memory_Compare have added some errors checker regarding ByteArray1 and ByteArray2.\
+-> Sodium_Memory_Compare and Sodium_Compare have reduced 1 input parameter respectively.\
+-> SodiumSecretBoxChaCha20Poly1305, SodiumSecretBoxChaCha20IETFPoly1305, SodiumSecretBoxSalsa20Poly1305 have some minor changes to the code.
+
 ## Note(.Net Framework)
 If you are developing for .Net Framework 4.8 or 4.7.2, you are required to put the dll(libsodium) into the application folder else it won't work
 
