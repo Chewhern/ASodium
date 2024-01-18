@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace ASodium
 {
@@ -88,25 +89,33 @@ namespace ASodium
         //or via "static unsafe void Main()" ==
         public static void SecureClearString(String Source)
         {
+            Byte[] SourceBytes = Encoding.UTF8.GetBytes(Source);
             GCHandle MyGeneralGCHandle = GCHandle.Alloc(Source, GCHandleType.Pinned);
-            MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), Source.Length*4);
+            MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), SourceBytes.LongLength);
             MyGeneralGCHandle.Free();
+            SecureClearBytes(SourceBytes);
         }
 
         public static void SecureMemoryLockString(String Source)
         {
+            Byte[] SourceBytes = Encoding.UTF8.GetBytes(Source);
             GCHandle MyGeneralGCHandle = GCHandle.Alloc(Source, GCHandleType.Pinned);
-            MemLock(MyGeneralGCHandle.AddrOfPinnedObject(), Source.Length * 4);
+            MemLock(MyGeneralGCHandle.AddrOfPinnedObject(), SourceBytes.LongLength);
             MyGeneralGCHandle.Free();
+            SecureClearBytes(SourceBytes);
         }
 
         public static void SecureMemoryUnlockString(String Source)
         {
+            Byte[] SourceBytes = Encoding.UTF8.GetBytes(Source);
             GCHandle MyGeneralGCHandle = GCHandle.Alloc(Source, GCHandleType.Pinned);
-            MemUnlock(MyGeneralGCHandle.AddrOfPinnedObject(), Source.Length * 4);
+            MemUnlock(MyGeneralGCHandle.AddrOfPinnedObject(), SourceBytes.LongLength);
             MyGeneralGCHandle.Free();
+            SecureClearBytes(SourceBytes);
         }
 
+        //Don't really know how to optimize or make the operations on char array
+        //more proper.
         public static void SecureClearCharArray(Char[] Source)
         {
             GCHandle MyGeneralGCHandle = GCHandle.Alloc(Source, GCHandleType.Pinned);
