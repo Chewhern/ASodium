@@ -114,6 +114,12 @@ namespace ASodium
             SecureClearBytes(SourceBytes);
         }
 
+        //I try to optimize the String operations and reduce the likelihood of
+        //having segmentation fault or having zero pointers/null pointer.
+        //However, I only reduce and optimize the String operations.
+        //I can't guarantee that it's 100% gone.
+        //Please bear in mind when using String related operations.
+
         //Don't really know how to optimize or make the operations on char array
         //more proper.
         public static void SecureClearCharArray(Char[] Source)
