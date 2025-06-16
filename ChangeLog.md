@@ -68,6 +68,10 @@ and it uses **sodium_memcmp** to do the comparison with the MAC attached in the 
 0.6.1 version\
 -> String operations within SodiumSecureMemory have been slightly reworked. For details, kindly refer [here](https://github.com/Chewhern/ASodium/blob/main/Source/SodiumSecureMemory.cs).
 
+0.6.2 version\
+-> Added support for .NET 8.0\
+-> Added **HKDF-SHA512** and **HKDF-SHA256**.
+
 ## Note(.Net Framework)
 If you are developing for .Net Framework 4.8 or 4.7.2, you are required to put the dll(libsodium) into the application folder else it won't work
 
