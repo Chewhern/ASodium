@@ -72,6 +72,24 @@ and it uses **sodium_memcmp** to do the comparison with the MAC attached in the 
 -> Added support for .NET 8.0\
 -> Added **HKDF-SHA512** and **HKDF-SHA256**.
 
+0.6.4 version\
+-> **SecretStream** fixed rekeying issues.
+-> All functions have additional **IntPtr** as the header.
+-> All exising **IntPtr** header methods reworked. Now it doesn't use **Marshal.Copy()**, it directly interact with libsodium with **IntPtr**.
+-> **IntPtr** issues/bugs that exist in **0.6.3** version were greatly reduced. 
+-> All **IntPtr** created with **sodium_malloc**, this means they have **sodium_mlock** by default.
+
+## Note(For 0.6.4 and above) - Memory Lock and Swap Partitions
+Swap partition generally is required when involving with small RAM amount (Eg, 512 MB with 1 GB swap partition particularly on Linux operating system. Windows and MacOS might not be affected by this by default as they have bigger RAM. ). However, this's not a good idea for cryptographic security as the private key or data may be leaked as the operating system will write and read data from swap partitions.
+
+From what I have tested and developed so far, in C#, calling **sodium_mlock** directly on **Byte[]** generally will cause the system to go into runtime error. I don't exactly know what caused this but with the use of **IntPtr**, this issue occurs less or didn't occur at all.
+
+And so if cryptography security is the main concern, strict **IntPtr** that comes from **sodium_malloc** that has **sodium_mlock** within will be encouraged. However this won't be able to extend to functions or cryptographic functions outside of **libsodium**. In the case of **BouncyCastle**, they accept **Byte[]** but not lower level stuffs like **pointer**. (This might also be one of the missing puzzle in enabling or developing **Software emulated hardware security module**)
+
+However, if your main concern is application runtime issue, then swap partitions can be enabled. 
+
+If a cross cryptography libraries environment was expected, then if your machine is Linux and happen to have at least 2GB of RAM, kindly make sure the machine only host and have cryptographic related applications on it. This's to make space for both disabling swap partition and using **sodium_mlock** while swap partition was enabled. 
+
 ## Note(.Net Framework)
 If you are developing for .Net Framework 4.8 or 4.7.2, you are required to put the dll(libsodium) into the application folder else it won't work
 
