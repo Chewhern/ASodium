@@ -1,0 +1,48 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ASodium
+{
+    public static partial class SodiumHKDFSHA256Library
+    {
+        #if IOS
+            const string DllName = "__Internal";
+        #else
+            const string DllName = "libsodium";
+        #endif
+
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern int crypto_kdf_hkdf_sha256_extract_init(Byte[] State, Byte[] Salt, int SaltLength);
+
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern int crypto_kdf_hkdf_sha256_extract_update(Byte[] State, Byte[] InputKeyMaterial, long InputKeyMaterialLength);
+
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern int crypto_kdf_hkdf_sha256_extract_final(Byte[] State, Byte[] MasterKey);
+
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern int crypto_kdf_hkdf_sha256_extract(Byte[] MasterKey, Byte[] Salt, int SaltLength, Byte[] InputKeyMaterial, long InputKeyMaterialLength);
+
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void crypto_kdf_hkdf_sha256_keygen(Byte[] Key);
+
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern int crypto_kdf_hkdf_sha256_expand(Byte[] SubKey,int SubKeyLength, Byte[] Context, int ContextLength, Byte[] MasterKey);
+
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern int crypto_kdf_hkdf_sha256_keybytes();
+
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern int crypto_kdf_hkdf_sha256_bytes_min();
+
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern int crypto_kdf_hkdf_sha256_bytes_max();
+
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern int crypto_kdf_hkdf_sha256_statebytes();
+    }
+}
