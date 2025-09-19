@@ -73,10 +73,10 @@ and it uses **sodium_memcmp** to do the comparison with the MAC attached in the 
 -> Added **HKDF-SHA512** and **HKDF-SHA256**.
 
 0.6.4 version\
--> **SecretStream** fixed rekeying issues.
--> All functions have additional **IntPtr** as the header.
--> All exising **IntPtr** header methods reworked. Now it doesn't use **Marshal.Copy()**, it directly interact with libsodium with **IntPtr**.
--> **IntPtr** issues/bugs that exist in **0.6.3** version were greatly reduced. 
+-> **SecretStream** fixed rekeying issues.\
+-> All functions have additional **IntPtr** as the header.\
+-> All exising **IntPtr** header methods reworked. Now it doesn't use **Marshal.Copy()**, it directly interact with libsodium with **IntPtr**.\
+-> **IntPtr** issues/bugs that exist in **0.6.3** version were greatly reduced.\
 -> All **IntPtr** created with **sodium_malloc**, this means they have **sodium_mlock** by default.
 
 ## Note(For 0.6.4 and above) - Memory Lock and Swap Partitions
