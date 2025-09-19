@@ -86,7 +86,7 @@ From what I have tested and developed so far, in C#, calling **sodium_mlock** di
 
 And so if cryptography security is the main concern, strict **IntPtr** that comes from **sodium_malloc** that has **sodium_mlock** within will be encouraged. However this won't be able to extend to functions or cryptographic functions outside of **libsodium**. In the case of **BouncyCastle**, they accept **Byte[]** but not lower level stuffs like **pointer**. (This might also be one of the missing puzzle in enabling or developing **Software emulated hardware security module**)
 
-However, if your main concern is application runtime issue, then swap partitions can be enabled. 
+However, if your main concern is system stability, then swap partitions can be enabled. 
 
 If a cross cryptography libraries environment was expected, then if your machine is Linux and happen to have at least 2GB of RAM, kindly make sure the machine only host and have cryptographic related applications on it. This's to make space for both disabling swap partition and using **sodium_mlock** while swap partition was enabled. 
 
