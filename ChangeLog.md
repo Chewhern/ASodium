@@ -80,14 +80,14 @@ and it uses **sodium_memcmp** to do the comparison with the MAC attached in the 
 -> All **IntPtr** created with **sodium_malloc**, this means they have **sodium_mlock** by default.
 
 0.6.5 version\
--> **IntPtr** variant slightly reworked for key or data allocations.
--> **SecretAEAD** now provides **IntPtr** variant for **nsec** variable.
--> **SecretAEAD** fixes some minor bugs on previous **AdditionalData** variables.
--> **SecretAEAD** now rename from **GetABytesLength** into **GetMACBytesLength**.
--> **SodiumPublicKeyBox** added an optional clearkey for seeded variant.
--> **SodiumPublicKeyBoxXChaCha20Poly1305** removed **box zero bytes**.
--> **SecureMemory** removed lock and unlock for string, byte[] and char[]. 
--> **SecretKeyAuth** changed the verification boolean logic for the last two verification methods.
+-> **IntPtr** variant slightly reworked for key or data allocations.\
+-> **SecretAEAD** now provides **IntPtr** variant for **nsec** variable.\
+-> **SecretAEAD** fixes some minor bugs on previous **AdditionalData** variables.\
+-> **SecretAEAD** now rename from **GetABytesLength** into **GetMACBytesLength**.\
+-> **SodiumPublicKeyBox** added an optional clearkey for seeded variant.\
+-> **SodiumPublicKeyBoxXChaCha20Poly1305** removed **box zero bytes**.\
+-> **SecureMemory** removed lock and unlock for string, byte[] and char[].\
+-> **SecretKeyAuth** changed the verification boolean logic for the last two verification methods.\
 -> Added **IPCrypt** from **libsodium**
 
 ## Note(For 0.6.4 and above) - Memory Lock and Swap Partitions
