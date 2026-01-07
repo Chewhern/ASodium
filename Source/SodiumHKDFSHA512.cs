@@ -41,16 +41,7 @@ namespace ASodium
             Boolean IsZero = true;
             IntPtr MasterKey = SodiumGuardedHeapAllocation.Sodium_Malloc(ref IsZero, GetKeyBytesLength());
 
-            int TryAttempts = 5;
-            int Loop = 0;
-
-            while (IsZero == true && Loop < TryAttempts)
-            {
-                MasterKey = SodiumGuardedHeapAllocation.Sodium_Malloc(ref IsZero, GetKeyBytesLength());
-                Loop += 1;
-            }
-
-            if (IsZero == false && Loop < TryAttempts)
+            if (IsZero == false)
             {
                 SodiumHKDFSHA512Library.crypto_kdf_hkdf_sha512_keygen(MasterKey);
                 SodiumGuardedHeapAllocation.Sodium_MProtect_NoAccess(MasterKey);
@@ -130,16 +121,7 @@ namespace ASodium
             Boolean IsZero = true;
             IntPtr DerivedKey = SodiumGuardedHeapAllocation.Sodium_Malloc(ref IsZero, DerivedKeyLength);
 
-            int TryAttempts = 5;
-            int Loop = 0;
-
-            while (IsZero == true && Loop < TryAttempts)
-            {
-                DerivedKey = SodiumGuardedHeapAllocation.Sodium_Malloc(ref IsZero, DerivedKeyLength);
-                Loop += 1;
-            }
-
-            if (IsZero == false && Loop < TryAttempts)
+            if (IsZero == false)
             {
                 SodiumGuardedHeapAllocation.Sodium_MProtect_ReadOnly(MasterKey);
                 if (Context == null)
@@ -208,16 +190,7 @@ namespace ASodium
             Boolean IsZero = true;
             IntPtr MasterKey = SodiumGuardedHeapAllocation.Sodium_Malloc(ref IsZero, GetKeyBytesLength());
 
-            int TryAttempts = 5;
-            int Loop = 0;
-
-            while (IsZero == true && Loop < TryAttempts)
-            {
-                MasterKey = SodiumGuardedHeapAllocation.Sodium_Malloc(ref IsZero, GetKeyBytesLength());
-                Loop += 1;
-            }
-
-            if (IsZero == false && Loop < TryAttempts)
+            if (IsZero == false)
             {
                 SodiumGuardedHeapAllocation.Sodium_MProtect_ReadOnly(InputKeyMaterial);
                 if (Salt == null)
@@ -266,16 +239,7 @@ namespace ASodium
             Boolean IsZero = true;
             IntPtr StateBytes = SodiumGuardedHeapAllocation.Sodium_Malloc(ref IsZero, GetStateBytesLength());
 
-            int TryAttempts = 5;
-            int Loop = 0;
-
-            while (IsZero == true && Loop < TryAttempts)
-            {
-                StateBytes = SodiumGuardedHeapAllocation.Sodium_Malloc(ref IsZero, GetStateBytesLength());
-                Loop += 1;
-            }
-
-            if (IsZero == false && Loop < TryAttempts)
+            if (IsZero == false)
             {
                 if (Salt == null)
                 {
@@ -390,16 +354,7 @@ namespace ASodium
             Boolean IsZero = true;
             IntPtr MasterKey = SodiumGuardedHeapAllocation.Sodium_Malloc(ref IsZero, GetKeyBytesLength() * 2);
 
-            int TryAttempts = 5;
-            int Loop = 0;
-
-            while (IsZero == true && Loop < TryAttempts)
-            {
-                MasterKey = SodiumGuardedHeapAllocation.Sodium_Malloc(ref IsZero, GetKeyBytesLength() * 2);
-                Loop += 1;
-            }
-
-            if (IsZero == false && Loop < TryAttempts)
+            if (IsZero == false)
             {
                 //System will report in error if it's read only memory protection. 
                 SodiumGuardedHeapAllocation.Sodium_MProtect_ReadWrite(State);

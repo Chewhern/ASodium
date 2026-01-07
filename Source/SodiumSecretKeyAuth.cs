@@ -139,7 +139,7 @@ namespace ASodium
                 SodiumSecureMemory.SecureClearBytes(Key);
             }
 
-            return ret == -1;
+            return ret == 0;
         }
 
         public static Boolean VerifyMAC(Byte[] Message, Byte[] MAC, IntPtr Key, Boolean ClearKey = false)
@@ -160,7 +160,7 @@ namespace ASodium
                 SodiumGuardedHeapAllocation.Sodium_Free(Key);
             }
 
-            return ret == -1;
+            return ret == 0;
         }
     }
 }

@@ -70,19 +70,11 @@ namespace ASodium
                 throw new ArgumentException("Error: ED25519SK must not be null");
             }
 
-            int TryAttempts = 5;
-            int Count = 0;
-
             Boolean IsZero = true;
             IntPtr X25519SK = SodiumGuardedHeapAllocation.Sodium_Malloc(ref IsZero, SodiumPublicKeyBox.GetSecretKeyBytesLength());
-            
-            while (IsZero == true && Count<TryAttempts) 
-            {
-                X25519SK = SodiumGuardedHeapAllocation.Sodium_Malloc(ref IsZero, SodiumPublicKeyBox.GetSecretKeyBytesLength());
-                Count += 1;
-            }
 
-            if(IsZero== false && Count < TryAttempts) 
+
+            if(IsZero== false) 
             {
                 SodiumGuardedHeapAllocation.Sodium_MProtect_ReadOnly(ED25519SK);
 

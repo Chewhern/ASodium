@@ -27,9 +27,6 @@ namespace ASodium
         internal static extern int crypto_box_curve25519xchacha20poly1305_noncebytes();
 
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern int crypto_box_curve25519xchacha20poly1305_boxzerobytes();
-
-        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
         internal static extern int crypto_box_curve25519xchacha20poly1305_macbytes();
 
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]

@@ -32,11 +32,6 @@ namespace ASodium
             return SodiumPublicKeyBoxXChaCha20Poly1305Library.crypto_box_curve25519xchacha20poly1305_noncebytes();
         }
 
-        public static int GetBoxZeroBytesLength()
-        {
-            return SodiumPublicKeyBoxXChaCha20Poly1305Library.crypto_box_curve25519xchacha20poly1305_boxzerobytes();
-        }
-
         public static int GetMACBytesLength()
         {
             return SodiumPublicKeyBoxXChaCha20Poly1305Library.crypto_box_curve25519xchacha20poly1305_macbytes();
@@ -115,7 +110,7 @@ namespace ASodium
             return MyKeyPair;
         }
 
-        public static RevampedKeyPair GenerateSeededRevampedKeyPair(Byte[] Seed)
+        public static RevampedKeyPair GenerateSeededRevampedKeyPair(Byte[] Seed,Boolean Clearkey=false)
         {
             if (Seed == null)
             {
@@ -132,6 +127,11 @@ namespace ASodium
             SodiumPublicKeyBoxXChaCha20Poly1305Library.crypto_box_curve25519xchacha20poly1305_seed_keypair(PublicKey, SecretKey, Seed);
 
             RevampedKeyPair MyKeyPair = new RevampedKeyPair(PublicKey, SecretKey);
+
+            if (Clearkey == true) 
+            {
+                SodiumSecureMemory.SecureClearBytes(Seed);
+            }
 
             return MyKeyPair;
         }

@@ -41,16 +41,7 @@ namespace ASodium
             Boolean IsZero = true;
             IntPtr KeyIntPtr = SodiumGuardedHeapAllocation.Sodium_Malloc(ref IsZero, GetKeyBytes());
 
-            int TryAttempts = 5;
-            int Count = 0;
-
-            while (IsZero == true && Count < TryAttempts)
-            {
-                KeyIntPtr = SodiumGuardedHeapAllocation.Sodium_Malloc(ref IsZero, GetKeyBytes());
-                Count += 1;
-            }
-
-            if (IsZero == false && Count < TryAttempts)
+            if (IsZero == false)
             {
                 SodiumKDFLibrary.crypto_kdf_keygen(KeyIntPtr);
                 SodiumGuardedHeapAllocation.Sodium_MProtect_NoAccess(KeyIntPtr);
@@ -133,16 +124,7 @@ namespace ASodium
             Boolean IsZero = true;
             IntPtr SubKey = SodiumGuardedHeapAllocation.Sodium_Malloc(ref IsZero, SubKeyLength);
 
-            int TryAttempts = 5;
-            int Count = 0;
-
-            while (IsZero == true && Count < TryAttempts)
-            {
-                SubKey = SodiumGuardedHeapAllocation.Sodium_Malloc(ref IsZero, SubKeyLength);
-                Count += 1;
-            }
-
-            if (IsZero == false && Count < TryAttempts) 
+            if (IsZero == false) 
             {
                 SodiumGuardedHeapAllocation.Sodium_MProtect_ReadOnly(MasterKey);
                 int result = SodiumKDFLibrary.crypto_kdf_derive_from_key(SubKey, SubKeyLength, SubKeyID, Context, MasterKey);

@@ -155,16 +155,7 @@ namespace ASodium
             Boolean IsZero = true;
             IntPtr KeyIntPtr = SodiumGuardedHeapAllocation.Sodium_Malloc(ref IsZero, GetStandardKeyLength());
 
-            int TryAttempts = 5;
-            int Count = 0;
-
-            while (IsZero == true && Count < TryAttempts)
-            {
-                KeyIntPtr = SodiumGuardedHeapAllocation.Sodium_Malloc(ref IsZero, GetStandardKeyLength());
-                Count += 1;
-            }
-
-            if (IsZero == false && Count < TryAttempts)
+            if (IsZero == false)
             {
                 SodiumGenericHashLibrary.crypto_generichash_keygen(KeyIntPtr);
                 SodiumGuardedHeapAllocation.Sodium_MProtect_NoAccess(KeyIntPtr);
@@ -273,18 +264,8 @@ namespace ASodium
             Boolean IsZero = true;
             IntPtr State = SodiumGuardedHeapAllocation.Sodium_Malloc(ref IsZero, GetStateBytesLength());
 
-            int TryAttempts = 5;
-            int Count = 0;
-
-            while (IsZero == true && Count < TryAttempts)
+            if (IsZero == false) 
             {
-                State = SodiumGuardedHeapAllocation.Sodium_Malloc(ref IsZero, GetStateBytesLength());
-                Count += 1;
-            }
-
-            if (IsZero == false && Count < TryAttempts) 
-            {
-
                 if (OutLength != 0)
                 {
                     if (OutLength != GetStandardComputedHashLength())

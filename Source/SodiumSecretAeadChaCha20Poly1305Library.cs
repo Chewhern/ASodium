@@ -30,25 +30,25 @@ namespace ASodium
         internal static extern int crypto_aead_chacha20poly1305_encrypt(Byte[] CipherText,long CipherTextLength,Byte[] Message,long MessageLength,Byte[] AdditionalData,long AdditionalDataLength,Byte[] NonceSecurity,Byte[] NoncePublic,Byte[] Key);
 
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern int crypto_aead_chacha20poly1305_encrypt(Byte[] CipherText, long CipherTextLength, Byte[] Message, long MessageLength, Byte[] AdditionalData, long AdditionalDataLength, Byte[] NonceSecurity, Byte[] NoncePublic, IntPtr Key);
+        internal static extern int crypto_aead_chacha20poly1305_encrypt(Byte[] CipherText, long CipherTextLength, Byte[] Message, long MessageLength, Byte[] AdditionalData, long AdditionalDataLength, IntPtr NonceSecurity, Byte[] NoncePublic, IntPtr Key);
 
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
         internal static extern int crypto_aead_chacha20poly1305_decrypt(Byte[] Message,long MessageLength,Byte[] NonceSecurity,Byte[] CipherText,long CipherTextLength,Byte[] AdditionalData,long AdditionalDataLength,Byte[] NoncePublic,Byte[] Key);
 
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern int crypto_aead_chacha20poly1305_decrypt(Byte[] Message, long MessageLength, Byte[] NonceSecurity, Byte[] CipherText, long CipherTextLength, Byte[] AdditionalData, long AdditionalDataLength, Byte[] NoncePublic, IntPtr Key);
+        internal static extern int crypto_aead_chacha20poly1305_decrypt(Byte[] Message, long MessageLength, IntPtr NonceSecurity, Byte[] CipherText, long CipherTextLength, Byte[] AdditionalData, long AdditionalDataLength, Byte[] NoncePublic, IntPtr Key);
 
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
         internal static extern int crypto_aead_chacha20poly1305_encrypt_detached(Byte[] CipherText, Byte[] MAC, long MACLength, Byte[] Message, long MessageLength, Byte[] AdditionalData, long AdditionalDataLength, Byte[] NonceSecurity, Byte[] NoncePublic, Byte[] Key);
 
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern int crypto_aead_chacha20poly1305_encrypt_detached(Byte[] CipherText, Byte[] MAC, long MACLength, Byte[] Message, long MessageLength, Byte[] AdditionalData, long AdditionalDataLength, Byte[] NonceSecurity, Byte[] NoncePublic, IntPtr Key);
+        internal static extern int crypto_aead_chacha20poly1305_encrypt_detached(Byte[] CipherText, Byte[] MAC, long MACLength, Byte[] Message, long MessageLength, Byte[] AdditionalData, long AdditionalDataLength, IntPtr NonceSecurity, Byte[] NoncePublic, IntPtr Key);
 
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
         internal static extern int crypto_aead_chacha20poly1305_decrypt_detached(Byte[] Message, Byte[] NonceSecurity, Byte[] CipherText, long CipherTextLength,Byte[] MAC, Byte[] AdditionalData, long AdditionalDataLength, Byte[] NoncePublic, Byte[] Key);
 
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern int crypto_aead_chacha20poly1305_decrypt_detached(Byte[] Message, Byte[] NonceSecurity, Byte[] CipherText, long CipherTextLength, Byte[] MAC, Byte[] AdditionalData, long AdditionalDataLength, Byte[] NoncePublic, IntPtr Key);
+        internal static extern int crypto_aead_chacha20poly1305_decrypt_detached(Byte[] Message, IntPtr NonceSecurity, Byte[] CipherText, long CipherTextLength, Byte[] MAC, Byte[] AdditionalData, long AdditionalDataLength, Byte[] NoncePublic, IntPtr Key);
 
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void crypto_aead_chacha20poly1305_keygen(Byte[] Key);

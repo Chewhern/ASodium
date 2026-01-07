@@ -23,16 +23,7 @@ namespace ASodium
             Boolean IsZero = true;
             IntPtr DataIntPtr = SodiumGuardedHeapAllocation.Sodium_Malloc(ref IsZero, Count);
 
-            int TryAttempts = 5;
-            int Loop = 0;
-
-            while (IsZero == true && Loop < TryAttempts)
-            {
-                DataIntPtr = SodiumGuardedHeapAllocation.Sodium_Malloc(ref IsZero, Count);
-                Loop += 1;
-            }
-
-            if (IsZero == false && Loop < TryAttempts)
+            if (IsZero == false)
             {
                 SodiumRNGLibrary.randombytes_buf(DataIntPtr, Count);
             }
@@ -88,16 +79,7 @@ namespace ASodium
             Boolean IsZero = true;
             IntPtr DataIntPtr = SodiumGuardedHeapAllocation.Sodium_Malloc(ref IsZero, Count);
 
-            int TryAttempts = 5;
-            int Loop = 0;
-
-            while (IsZero == true && Loop < TryAttempts)
-            {
-                DataIntPtr = SodiumGuardedHeapAllocation.Sodium_Malloc(ref IsZero, Count);
-                Loop += 1;
-            }
-
-            if (IsZero == false && Loop < TryAttempts)
+            if (IsZero == false)
             {
                 SodiumGuardedHeapAllocation.Sodium_MProtect_ReadOnly(Seed);
                 SodiumRNGLibrary.randombytes_buf_deterministic(DataIntPtr, Count, Seed);

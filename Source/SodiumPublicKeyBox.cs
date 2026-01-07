@@ -110,7 +110,7 @@ namespace ASodium
             return MyKeyPair;
         }
 
-        public static RevampedKeyPair GenerateSeededRevampedKeyPair(Byte[] Seed)
+        public static RevampedKeyPair GenerateSeededRevampedKeyPair(Byte[] Seed, Boolean ClearKey = false)
         {
             if (Seed == null)
             {
@@ -127,6 +127,11 @@ namespace ASodium
             SodiumPublicKeyBoxLibrary.crypto_box_seed_keypair(PublicKey, SecretKey,Seed);
 
             RevampedKeyPair MyKeyPair = new RevampedKeyPair(PublicKey, SecretKey);
+
+            if (ClearKey==true)
+            {
+                SodiumSecureMemory.SecureClearBytes(Seed);
+            }
 
             return MyKeyPair;
         }

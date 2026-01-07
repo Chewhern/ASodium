@@ -31,16 +31,7 @@ namespace ASodium
             Boolean IsZero = true;
             IntPtr KeyIntPtr = SodiumGuardedHeapAllocation.Sodium_Malloc(ref IsZero, GetKeyBytesLength());
 
-            int TryAttempts = 5;
-            int Count = 0;
-
-            while (IsZero == true && Count < TryAttempts)
-            {
-                KeyIntPtr = SodiumGuardedHeapAllocation.Sodium_Malloc(ref IsZero, GetKeyBytesLength());
-                Count += 1;
-            }
-
-            if (IsZero == false && Count < TryAttempts)
+            if (IsZero == false)
             {
                 SodiumHMACSHA512256Library.crypto_auth_hmacsha512256_keygen(KeyIntPtr);
                 SodiumGuardedHeapAllocation.Sodium_MProtect_NoAccess(KeyIntPtr);
