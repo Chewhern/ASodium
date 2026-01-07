@@ -1,0 +1,427 @@
+﻿using System;
+using System.Security.Cryptography;
+using System.Runtime.InteropServices;
+
+namespace ASodium
+{
+    public static class SodiumSecretAeadAES256GCM
+    {
+        public static Boolean IsAES256GCMAvailable() 
+        {
+            int result = SodiumSecretAeadAES256GCMLibrary.crypto_aead_aes256gcm_is_available();
+
+            if (result == 1) 
+            {
+                return true;
+            }
+            else 
+            {
+                return false;
+            }
+        }
+
+        public static int GetKeyLength()
+        {
+            return SodiumSecretAeadAES256GCMLibrary.crypto_aead_aes256gcm_keybytes();
+        }
+
+        public static int GetNoncePublicLength()
+        {
+            return SodiumSecretAeadAES256GCMLibrary.crypto_aead_aes256gcm_npubbytes();
+        }
+
+        public static int GetNonceSecurityLength()
+        {
+            return SodiumSecretAeadAES256GCMLibrary.crypto_aead_aes256gcm_nsecbytes();
+        }
+
+        public static int GetABytesLength()
+        {
+            return SodiumSecretAeadAES256GCMLibrary.crypto_aead_aes256gcm_abytes();
+        }
+
+        public static long GetMessageMaxLength()
+        {
+            return SodiumSecretAeadAES256GCMLibrary.crypto_aead_aes256gcm_messagebytes_max();
+        }
+
+        public static Byte[] GeneratePublicNonce()
+        {
+            return SodiumRNG.GetRandomBytes(GetNoncePublicLength());
+        }
+
+        public static Byte[] GenerateSecurityNonce() 
+        {
+            return SodiumRNG.GetRandomBytes(GetNonceSecurityLength());
+        }
+
+        public static Byte[] GenerateKey()
+        {
+            Byte[] Key = new Byte[GetKeyLength()];
+            SodiumSecretAeadAES256GCMLibrary.crypto_aead_aes256gcm_keygen(Key);
+            return Key;
+        }
+
+        public static IntPtr GenerateKey(ref Boolean IsZero)
+        {
+            Boolean LocalIsZero = true;
+            IntPtr KeyIntPtr = SodiumGuardedHeapAllocation.Sodium_Malloc(ref LocalIsZero, GetKeyLength());
+            IsZero = LocalIsZero;
+            if (LocalIsZero == false)
+            {
+                SodiumSecretAeadAES256GCMLibrary.crypto_aead_aes256gcm_keygen(KeyIntPtr);
+                SodiumGuardedHeapAllocation.Sodium_MProtect_NoAccess(KeyIntPtr);
+                return KeyIntPtr;
+            }
+            else
+            {
+                return IntPtr.Zero;
+            }
+        }
+
+        public static Byte[] Encrypt(Byte[] Message, Byte[] NoncePublic, Byte[] Key, Byte[] AdditionalData = null, Byte[] NonceSecurity = null,Boolean ClearKey=false)
+        {
+            Byte[] CipherText = new Byte[Message.LongLength + GetABytesLength()];
+            long CipherTextLength = 0;
+            long MessageLength = Message.LongLength;
+            long AdditionalDataLength = 0;
+            if (Key == null || Key.Length != GetKeyLength())
+                throw new ArgumentException("Error: Key must be " + GetKeyLength() + " bytes in length");
+            if (NoncePublic == null || NoncePublic.Length != GetNoncePublicLength())
+                throw new ArgumentException("Error: Public nonce must be " + GetNoncePublicLength() + " bytes in length");
+            if (AdditionalData != null && (AdditionalData.Length > GetABytesLength() || AdditionalData.Length < 0))
+                throw new ArgumentException("Error: Additional data must be between 0 and " + GetABytesLength() + " in bytes in length");
+            if (NonceSecurity != null) 
+            {
+                if (NonceSecurity.Length != GetNonceSecurityLength()) 
+                {
+                    throw new ArgumentException("Error: Nonce Security must exactly be " + GetNonceSecurityLength().ToString() + " bytes in length");
+                }
+            }
+
+            if (AdditionalData != null && AdditionalData.Length != 0)
+            {
+                AdditionalDataLength = AdditionalData.LongLength;
+            }
+            int result = SodiumSecretAeadAES256GCMLibrary.crypto_aead_aes256gcm_encrypt(CipherText, CipherTextLength, Message, MessageLength, AdditionalData, AdditionalDataLength, NonceSecurity, NoncePublic, Key);
+
+            if (ClearKey == true) 
+            {
+                SodiumSecureMemory.SecureClearBytes(Key);
+            }
+
+            if (result != 0)
+            {
+                throw new CryptographicException("Error encrypting message.");
+            }
+            return CipherText;
+        }
+
+        public static Byte[] Encrypt(Byte[] Message, Byte[] NoncePublic, IntPtr Key, Byte[] AdditionalData = null, Byte[] NonceSecurity = null, Boolean ClearKey = false)
+        {
+            Byte[] CipherText = new Byte[Message.LongLength + GetABytesLength()];
+            long CipherTextLength = 0;
+            long MessageLength = Message.LongLength;
+            long AdditionalDataLength = 0;
+            if (Key == IntPtr.Zero)
+                throw new ArgumentException("Error: Key must not be null/empty");
+            if (NoncePublic == null || NoncePublic.Length != GetNoncePublicLength())
+                throw new ArgumentException("Error: Public nonce must be " + GetNoncePublicLength() + " bytes in length");
+            if (AdditionalData != null && (AdditionalData.Length > GetABytesLength() || AdditionalData.Length < 0))
+                throw new ArgumentException("Error: Additional data must be between 0 and " + GetABytesLength() + " in bytes in length");
+            if (NonceSecurity != null)
+            {
+                if (NonceSecurity.Length != GetNonceSecurityLength())
+                {
+                    throw new ArgumentException("Error: Nonce Security must exactly be " + GetNonceSecurityLength().ToString() + " bytes in length");
+                }
+            }
+
+            if (AdditionalData != null && AdditionalData.Length != 0)
+            {
+                AdditionalDataLength = AdditionalData.LongLength;
+            }
+
+            SodiumGuardedHeapAllocation.Sodium_MProtect_ReadOnly(Key);
+            int result = SodiumSecretAeadAES256GCMLibrary.crypto_aead_aes256gcm_encrypt(CipherText, CipherTextLength, Message, MessageLength, AdditionalData, AdditionalDataLength, NonceSecurity, NoncePublic, Key);
+            SodiumGuardedHeapAllocation.Sodium_MProtect_NoAccess(Key);
+
+            if (ClearKey == true)
+            {
+                SodiumGuardedHeapAllocation.Sodium_MProtect_ReadWrite(Key);
+                SodiumGuardedHeapAllocation.Sodium_Free(Key);
+            }
+
+            if (result != 0)
+            {
+                throw new CryptographicException("Error encrypting message.");
+            }
+            return CipherText;
+        }
+
+        public static Byte[] Decrypt(Byte[] CipherText, Byte[] NoncePublic, Byte[] Key, Byte[] AdditionalData = null, Byte[] NonceSecurity = null,Boolean ClearKey=false)
+        {
+            Byte[] MessageByte = new Byte[CipherText.LongLength - GetABytesLength()];
+            long MessageLength = 0;
+            long CipherTextLength = CipherText.LongLength;
+            long AdditionalDataLength = 0;
+            if (Key == null || Key.Length != GetKeyLength())
+                throw new ArgumentException("Error: Key must be " + GetKeyLength() + " bytes in length");
+            if (NoncePublic == null || NoncePublic.Length != GetNoncePublicLength())
+                throw new ArgumentException("Error: Public nonce must be " + GetNoncePublicLength() + " bytes in length");
+            if (AdditionalData != null && (AdditionalData.Length > GetABytesLength() || AdditionalData.Length < 0))
+                throw new ArgumentException("Error: Additional data must be between 0 and " + GetABytesLength() + " in bytes in length");
+            if (NonceSecurity != null)
+            {
+                if (NonceSecurity.Length != GetNonceSecurityLength())
+                {
+                    throw new ArgumentException("Error: Nonce Security must exactly be " + GetNonceSecurityLength().ToString() + " bytes in length");
+                }
+            }
+            if (AdditionalData != null && AdditionalData.Length != 0)
+            {
+                AdditionalDataLength = AdditionalData.LongLength;
+            }
+
+            int result = SodiumSecretAeadAES256GCMLibrary.crypto_aead_aes256gcm_decrypt(MessageByte, MessageLength, NonceSecurity, CipherText, CipherTextLength, AdditionalData, AdditionalDataLength, NoncePublic, Key);
+
+            if (ClearKey == true)
+            {
+                SodiumSecureMemory.SecureClearBytes(Key);
+            }
+
+            if (result == -1)
+            {
+                throw new CryptographicException("Error: Verification of MAC stored in cipher text failed");
+            }
+
+            return MessageByte;
+        }
+
+        public static Byte[] Decrypt(Byte[] CipherText, Byte[] NoncePublic, IntPtr Key, Byte[] AdditionalData = null, Byte[] NonceSecurity = null, Boolean ClearKey = false)
+        {
+            Byte[] MessageByte = new Byte[CipherText.LongLength - GetABytesLength()];
+            long MessageLength = 0;
+            long CipherTextLength = CipherText.LongLength;
+            long AdditionalDataLength = 0;
+            if (Key == IntPtr.Zero)
+                throw new ArgumentException("Error: Key must not be null/empty");
+            if (NoncePublic == null || NoncePublic.Length != GetNoncePublicLength())
+                throw new ArgumentException("Error: Public nonce must be " + GetNoncePublicLength() + " bytes in length");
+            if (AdditionalData != null && (AdditionalData.Length > GetABytesLength() || AdditionalData.Length < 0))
+                throw new ArgumentException("Error: Additional data must be between 0 and " + GetABytesLength() + " in bytes in length");
+            if (NonceSecurity != null)
+            {
+                if (NonceSecurity.Length != GetNonceSecurityLength())
+                {
+                    throw new ArgumentException("Error: Nonce Security must exactly be " + GetNonceSecurityLength().ToString() + " bytes in length");
+                }
+            }
+            if (AdditionalData != null && AdditionalData.Length != 0)
+            {
+                AdditionalDataLength = AdditionalData.LongLength;
+            }
+
+            SodiumGuardedHeapAllocation.Sodium_MProtect_ReadOnly(Key);
+            int result = SodiumSecretAeadAES256GCMLibrary.crypto_aead_aes256gcm_decrypt(MessageByte, MessageLength, NonceSecurity, CipherText, CipherTextLength, AdditionalData, AdditionalDataLength, NoncePublic, Key);
+            SodiumGuardedHeapAllocation.Sodium_MProtect_NoAccess(Key);
+
+            if (ClearKey == true)
+            {
+                SodiumGuardedHeapAllocation.Sodium_MProtect_ReadWrite(Key);
+                SodiumGuardedHeapAllocation.Sodium_Free(Key);
+            }
+
+            if (result == -1)
+            {
+                throw new CryptographicException("Error: Verification of MAC stored in cipher text failed");
+            }
+
+            return MessageByte;
+        }
+
+        public static DetachedBox CreateDetachedBox(Byte[] Message, Byte[] NoncePublic, Byte[] Key, Byte[] NonceSecurity = null, Byte[] AdditionalData = null,Boolean ClearKey=false)
+        {
+            DetachedBox MyDetachedBox = new DetachedBox();
+            Byte[] CipherText = new Byte[Message.LongLength];
+            Byte[] MAC = new Byte[GetABytesLength()];
+            long MACLength = 0;
+            long AdditionalDataLength = 0;
+            long MessageLength = Message.LongLength;
+
+            if (Key == null || Key.Length != GetKeyLength())
+                throw new ArgumentException("Error: Key must be " + GetKeyLength() + " bytes in length");
+            if (NoncePublic == null || NoncePublic.Length != GetNoncePublicLength())
+                throw new ArgumentException("Error: Public nonce must be " + GetNoncePublicLength() + " bytes in length");
+            if (AdditionalData != null && (AdditionalData.Length > GetABytesLength() || AdditionalData.Length < 0))
+                throw new ArgumentException("Error: Additional data must be between 0 and " + GetABytesLength() + " in bytes in length");
+            if (NonceSecurity != null)
+            {
+                if (NonceSecurity.Length != GetNonceSecurityLength())
+                {
+                    throw new ArgumentException("Error: Nonce Security must exactly be " + GetNonceSecurityLength().ToString() + " bytes in length");
+                }
+            }
+
+            if (AdditionalData != null && AdditionalData.Length != 0)
+            {
+                AdditionalDataLength = AdditionalData.LongLength;
+            }
+
+            int result = SodiumSecretAeadAES256GCMLibrary.crypto_aead_aes256gcm_encrypt_detached(CipherText, MAC, MACLength, Message, MessageLength, AdditionalData, AdditionalDataLength, NonceSecurity, NoncePublic, Key);
+
+            if (ClearKey == true)
+            {
+                SodiumSecureMemory.SecureClearBytes(Key);
+            }
+
+            if (result != 0)
+            {
+                throw new CryptographicException("Error: Failed to create detached box");
+            }
+
+            MyDetachedBox = new DetachedBox(CipherText, MAC);
+
+            return MyDetachedBox;
+        }
+
+        public static DetachedBox CreateDetachedBox(Byte[] Message, Byte[] NoncePublic, IntPtr Key, Byte[] NonceSecurity = null, Byte[] AdditionalData = null, Boolean ClearKey = false)
+        {
+            DetachedBox MyDetachedBox = new DetachedBox();
+            Byte[] CipherText = new Byte[Message.LongLength];
+            Byte[] MAC = new Byte[GetABytesLength()];
+            long MACLength = 0;
+            long AdditionalDataLength = 0;
+            long MessageLength = Message.LongLength;
+
+            if (Key == IntPtr.Zero)
+                throw new ArgumentException("Error: Key must not be null/empty");
+            if (NoncePublic == null || NoncePublic.Length != GetNoncePublicLength())
+                throw new ArgumentException("Error: Public nonce must be " + GetNoncePublicLength() + " bytes in length");
+            if (AdditionalData != null && (AdditionalData.Length > GetABytesLength() || AdditionalData.Length < 0))
+                throw new ArgumentException("Error: Additional data must be between 0 and " + GetABytesLength() + " in bytes in length");
+            if (NonceSecurity != null)
+            {
+                if (NonceSecurity.Length != GetNonceSecurityLength())
+                {
+                    throw new ArgumentException("Error: Nonce Security must exactly be " + GetNonceSecurityLength().ToString() + " bytes in length");
+                }
+            }
+
+            if (AdditionalData != null && AdditionalData.Length != 0)
+            {
+                AdditionalDataLength = AdditionalData.LongLength;
+            }
+
+            SodiumGuardedHeapAllocation.Sodium_MProtect_ReadOnly(Key);
+            int result = SodiumSecretAeadAES256GCMLibrary.crypto_aead_aes256gcm_encrypt_detached(CipherText, MAC, MACLength, Message, MessageLength, AdditionalData, AdditionalDataLength, NonceSecurity, NoncePublic, Key);
+            SodiumGuardedHeapAllocation.Sodium_MProtect_NoAccess(Key);
+
+            if (ClearKey == true)
+            {
+                SodiumGuardedHeapAllocation.Sodium_MProtect_ReadWrite(Key);
+                SodiumGuardedHeapAllocation.Sodium_Free(Key);
+            }
+
+            if (result != 0)
+            {
+                throw new CryptographicException("Error: Failed to create detached box");
+            }
+
+            MyDetachedBox = new DetachedBox(CipherText, MAC);
+
+            return MyDetachedBox;
+        }
+
+        public static Byte[] OpenDetachedBox(DetachedBox MyDetachedBox, Byte[] NoncePublic, Byte[] Key, Byte[] AdditionalData = null, Byte[] NonceSecurity = null,Boolean ClearKey=false)
+        {
+            return OpenDetachedBox(MyDetachedBox.CipherText, MyDetachedBox.Mac, NoncePublic, Key, AdditionalData, NonceSecurity,ClearKey);
+        }
+
+        public static Byte[] OpenDetachedBox(DetachedBox MyDetachedBox, Byte[] NoncePublic, IntPtr Key, Byte[] AdditionalData = null, Byte[] NonceSecurity = null, Boolean ClearKey = false)
+        {
+            return OpenDetachedBox(MyDetachedBox.CipherText, MyDetachedBox.Mac, NoncePublic, Key, AdditionalData, NonceSecurity, ClearKey);
+        }
+
+        public static Byte[] OpenDetachedBox(Byte[] CipherText, Byte[] MAC, Byte[] NoncePublic, Byte[] Key, Byte[] AdditionalData = null, Byte[] NonceSecurity = null,Boolean ClearKey=false)
+        {
+            Byte[] Message = new Byte[CipherText.LongLength];
+            long CipherTextLength = CipherText.LongLength;
+            long AdditionalDataLength = 0;
+
+            if (Key == null || Key.Length != GetKeyLength())
+                throw new ArgumentException("Error: Key must be " + GetKeyLength() + " bytes in length");
+            if (NoncePublic == null || NoncePublic.Length != GetNoncePublicLength())
+                throw new ArgumentException("Error: Public nonce must be " + GetNoncePublicLength() + " bytes in length");
+            if (AdditionalData != null && (AdditionalData.Length > GetABytesLength() || AdditionalData.Length < 0))
+                throw new ArgumentException("Error: Additional data must be between 0 and " + GetABytesLength() + " in bytes in length");
+            if (NonceSecurity != null)
+            {
+                if (NonceSecurity.Length != GetNonceSecurityLength())
+                {
+                    throw new ArgumentException("Error: Nonce Security must exactly be " + GetNonceSecurityLength().ToString() + " bytes in length");
+                }
+            }
+            if (AdditionalData != null && AdditionalData.Length != 0)
+            {
+                AdditionalDataLength = AdditionalData.LongLength;
+            }
+
+            int result = SodiumSecretAeadAES256GCMLibrary.crypto_aead_aes256gcm_decrypt_detached(Message, NonceSecurity, CipherText, CipherTextLength, MAC, AdditionalData, AdditionalDataLength, NoncePublic, Key);
+
+            if (ClearKey == true)
+            {
+                SodiumSecureMemory.SecureClearBytes(Key);
+            }
+
+            if (result == -1)
+            {
+                throw new CryptographicException("Error: Failed to open detached box");
+            }
+
+            return Message;
+        }
+
+        public static Byte[] OpenDetachedBox(Byte[] CipherText, Byte[] MAC, Byte[] NoncePublic, IntPtr Key, Byte[] AdditionalData = null, Byte[] NonceSecurity = null, Boolean ClearKey = false)
+        {
+            Byte[] Message = new Byte[CipherText.LongLength];
+            long CipherTextLength = CipherText.LongLength;
+            long AdditionalDataLength = 0;
+
+            if (Key == IntPtr.Zero)
+                throw new ArgumentException("Error: Key must not be null/empty");
+            if (NoncePublic == null || NoncePublic.Length != GetNoncePublicLength())
+                throw new ArgumentException("Error: Public nonce must be " + GetNoncePublicLength() + " bytes in length");
+            if (AdditionalData != null && (AdditionalData.Length > GetABytesLength() || AdditionalData.Length < 0))
+                throw new ArgumentException("Error: Additional data must be between 0 and " + GetABytesLength() + " in bytes in length");
+            if (NonceSecurity != null)
+            {
+                if (NonceSecurity.Length != GetNonceSecurityLength())
+                {
+                    throw new ArgumentException("Error: Nonce Security must exactly be " + GetNonceSecurityLength().ToString() + " bytes in length");
+                }
+            }
+            if (AdditionalData != null && AdditionalData.Length != 0)
+            {
+                AdditionalDataLength = AdditionalData.LongLength;
+            }
+
+            SodiumGuardedHeapAllocation.Sodium_MProtect_ReadOnly(Key);
+            int result = SodiumSecretAeadAES256GCMLibrary.crypto_aead_aes256gcm_decrypt_detached(Message, NonceSecurity, CipherText, CipherTextLength, MAC, AdditionalData, AdditionalDataLength, NoncePublic, Key);
+            SodiumGuardedHeapAllocation.Sodium_MProtect_NoAccess(Key);
+
+            if (ClearKey == true)
+            {
+                SodiumGuardedHeapAllocation.Sodium_MProtect_ReadWrite(Key);
+                SodiumGuardedHeapAllocation.Sodium_Free(Key);
+            }
+
+            if (result == -1)
+            {
+                throw new CryptographicException("Error: Failed to open detached box");
+            }
+
+            return Message;
+        }
+    }
+}
