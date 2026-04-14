@@ -11,11 +11,14 @@ namespace ASodium
         /// <param name="publicKey">The public key.</param>
         /// <param name="privateKey">The private key.</param>
         /// <exception cref="KeyOutOfRangeException"></exception>
-        public RevampedKeyPair(byte[] publicKey, byte[] privateKey)
+        public RevampedKeyPair(byte[] publicKey, byte[] privateKey,Boolean IsPQC=false)
         {
             //verify that the private key length is a multiple of 16
-            if (privateKey.Length % 16 != 0)
-                throw new ArgumentException("Private Key length must be a multiple of 16 bytes.");
+            if (IsPQC == false) 
+            {
+                if (privateKey.Length % 16 != 0)
+                    throw new ArgumentException("Private Key length must be a multiple of 16 bytes.");
+            }
 
             _publicKey = publicKey;
 
