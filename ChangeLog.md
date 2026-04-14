@@ -90,6 +90,10 @@ and it uses **sodium_memcmp** to do the comparison with the MAC attached in the 
 -> **SecretKeyAuth** changed the verification boolean logic for the last two verification methods.\
 -> Added **IPCrypt** from **libsodium**
 
+0.6.6 version\
+-> Added 3 **KEM** variants from libsodium which are **crypto_kem,crypto_kem_mlkem768,crypto_kem_xwing**\
+-> Added 4 **XOF** variants from libsodium which are **SHAKE128, SHAKE256, TURBOSHAKE128, TURBOSHAKE256**
+
 ## Note(For 0.6.4 and above) - Memory Lock and Swap Partitions
 Swap partition generally is required when involving with small RAM amount (Eg, 512 MB with 1 GB swap partition particularly on Linux operating system. Windows and MacOS might not be affected by this by default as they have bigger RAM. ). However, this's not a good idea for cryptographic security as the private key or data may be leaked as the operating system will write and read data from swap partitions.
 
