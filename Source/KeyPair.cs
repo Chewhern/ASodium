@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 
 namespace ASodium
 {
     public class KeyPair
     {
-        private readonly IntPtr PrivateKey;
-        private readonly int PrivateKeyLength;
-        private readonly IntPtr PublicKey;
-        private readonly int PublicKeyLength;
+        private IntPtr PrivateKey;
+        private int PrivateKeyLength;
+        private IntPtr PublicKey;
+        private int PublicKeyLength;
+        private Boolean HadCleared = false;
 
 
         //Assume that the IntPtr comes from GuardedHeapAllocation with NoAccess 
@@ -30,25 +32,28 @@ namespace ASodium
 
         public IntPtr GetPrivateKey()
         {
-            IntPtr ReadOnlyPrivateKey = IntPtr.Zero;
-            SodiumGuardedHeapAllocation.Sodium_MProtect_ReadOnly(this.PrivateKey);
-            ReadOnlyPrivateKey = this.PrivateKey;
-
-            return ReadOnlyPrivateKey;
-        }
-
-        public void ProtectPrivateKey()
-        {
-            SodiumGuardedHeapAllocation.Sodium_MProtect_NoAccess(this.PrivateKey);
+            if (CheckIsInvalid()) 
+            {
+                throw new CryptographicException("Error: This is not an initialized keypair instance.. Aborting private key pointer export/use..");
+            }
+            return this.PrivateKey;
         }
 
         public int GetPrivateKeyLength()
         {
+            if (CheckIsInvalid())
+            {
+                throw new CryptographicException("Error: This is not an initialized keypair instance.. Aborting private key length retrieval..");
+            }
             return this.PrivateKeyLength;
         }
 
         public Byte[] GetPublicKey()
         {
+            if (CheckIsInvalid()) 
+            {
+                throw new CryptographicException("Error: This is not an initialized keypair instance.. Aborting public key managed bytes export..");
+            }
             Byte[] PublicKey = new Byte[this.PublicKeyLength];
 
             SodiumGuardedHeapAllocation.Sodium_MProtect_ReadOnly(this.PublicKey);
@@ -60,16 +65,39 @@ namespace ASodium
 
         public int GetPublicKeyLength()
         {
+            if (CheckIsInvalid()) 
+            {
+                throw new CryptographicException("Error: This is not an initialized keypair instance.. Aborting public key length retrieval..");
+            }
             return this.PublicKeyLength;
         }
 
         public void Clear()
         {
-            SodiumGuardedHeapAllocation.Sodium_MProtect_ReadWrite(PrivateKey);
-            SodiumGuardedHeapAllocation.Sodium_Free(PrivateKey);
-            SodiumGuardedHeapAllocation.Sodium_MProtect_ReadWrite(PublicKey);
-            SodiumGuardedHeapAllocation.Sodium_Free(PublicKey);
-            new KeyPair();
+            if (CheckIsInvalid()==false && HadCleared==false) 
+            {
+                SodiumGuardedHeapAllocation.Sodium_MProtect_ReadWrite(PrivateKey);
+                SodiumGuardedHeapAllocation.Sodium_Free(PrivateKey);
+                SodiumGuardedHeapAllocation.Sodium_MProtect_ReadWrite(PublicKey);
+                SodiumGuardedHeapAllocation.Sodium_Free(PublicKey);
+                PrivateKey = IntPtr.Zero;
+                PublicKey = IntPtr.Zero;
+                PrivateKeyLength = 0;
+                PublicKeyLength = 0;
+                HadCleared = true;
+            }
+            else 
+            {
+                throw new CryptographicException("Error: This keypair instance had been cleared. Not allowed to be cleared again");
+            }
+        }
+
+        public Boolean CheckIsInvalid() 
+        {
+            return (this.PrivateKey == IntPtr.Zero ||
+            this.PrivateKeyLength == 0 ||
+            this.PublicKey == IntPtr.Zero ||
+            this.PublicKeyLength == 0);
         }
     }
 }

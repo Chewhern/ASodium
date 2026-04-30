@@ -25,9 +25,10 @@ namespace ASodium
             _privateKey = privateKey;
         }
 
-        ~RevampedKeyPair()
+        public RevampedKeyPair() 
         {
-            Clear();
+            _publicKey = null;
+            _privateKey = null;
         }
 
         /// <summary>Gets the Public Key.</summary>
@@ -48,8 +49,16 @@ namespace ASodium
         /// <summary>Clear private key and public key through cryptographically secure way.</summary>
         public void Clear()
         {
-            SodiumSecureMemory.SecureClearBytes(_privateKey);
-            SodiumSecureMemory.SecureClearBytes(_publicKey);
+            if (CheckIsNull()==false) 
+            {
+                SodiumSecureMemory.SecureClearBytes(_privateKey);
+                SodiumSecureMemory.SecureClearBytes(_publicKey);
+            }
+        }
+
+        public Boolean CheckIsNull() 
+        {
+            return _publicKey==null || _privateKey==null;
         }
     }
 }
