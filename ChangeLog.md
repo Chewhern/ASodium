@@ -96,6 +96,9 @@ and it uses **sodium_memcmp** to do the comparison with the MAC attached in the 
 -> Slightly reworked **RevampedKeyPair**\
 -> Added **EncapsulatedSharedSecretBox** for **KEM** usage
 
+0.6.7 version\
+-> Slight adjustments or enhancements on **KeyPair** and **RevampedKeyPair**. This might help to reduce some issues for the developers side.
+
 ## Note(For 0.6.4 and above) - Memory Lock and Swap Partitions
 Swap partition generally is required when involving with small RAM amount (Eg, 512 MB with 1 GB swap partition particularly on Linux operating system. Windows and MacOS might not be affected by this by default as they have bigger RAM. ). However, this's not a good idea for cryptographic security as the private key or data may be leaked as the operating system will write and read data from swap partitions.
 
