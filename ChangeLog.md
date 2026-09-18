@@ -100,7 +100,7 @@
 
 0.6.8 version
 - Removed **SetEnvironmentVariableHelper**
-- **```SodiumConvertDSAToDH,SodiumKEM,SodiumKEMXWing,SodiumKeyExchange,SodiumMLKEM768,SodiumPublicKeyAuth,SodiumPublicKeyAuthMPM,SodiumPublicKeyBox,SodiumPublicKeyBoxPCI,SodiumPublicKeyBoxXChaCha20Poly1305,SodiumPublicKeyBoxXChaCha20Poly1305PCI,SodiumScalarMult,SodiumSealedPublicKeyBox,SodiumSealedPublicKeyBoxXChaCha20Poly1305```** added **KeyPair** helper methods within them to help further reduce developers mistakes.
+- **```SodiumConvertDSAToDH,SodiumKEM,SodiumKEMXWing,SodiumKeyExchange,SodiumMLKEM768,SodiumPublicKeyAuth,SodiumPublicKeyAuthMPM,SodiumPublicKeyBox,SodiumPublicKeyBoxPCI,SodiumPublicKeyBoxXChaCha20Poly1305,SodiumPublicKeyBoxXChaCha20Poly1305PCI,SodiumScalarMult,SodiumSealedPublicKeyBox,SodiumSealedPublicKeyBoxXChaCha20Poly1305```** added **KeyPair** helper methods within them to help further reduce development mistakes.
 - **SodiumPublicKeyBox** added a **Byte[]** variant for **Open** method.
 
 ## Note(For 0.6.4 and above) - Memory Lock and Swap Partitions
