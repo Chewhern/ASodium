@@ -264,6 +264,16 @@ namespace ASodium
             return MySharedSecretBox;
         }
 
+        public static SodiumKeyExchangeSharedSecretIntPtrBox CalculateClientSharedSecret(Byte[] ClientPK, KeyPair ClientKP, Byte[] ServerPK, Boolean ClearKey = false) 
+        {
+            SodiumKeyExchangeSharedSecretIntPtrBox MyBox = CalculateClientSharedSecret(ClientPK, ClientKP.GetPrivateKey(), ServerPK, false);
+            if (ClearKey) 
+            {
+                ClientKP.Clear();
+            }
+            return MyBox;
+        }
+
         public static SodiumKeyExchangeSharedSecretIntPtrBox CalculateClientSharedSecret(Byte[] ClientPK, IntPtr ClientSK, Byte[] ServerPK, Boolean ClearKey=false)
         {
             if (ClientPK == null)
@@ -335,6 +345,16 @@ namespace ASodium
             }
 
             return MySharedSecretBox;
+        }
+
+        public static SodiumKeyExchangeSharedSecretIntPtrBox CalculateServerSharedSecret(Byte[] ServerPK, KeyPair ServerKP, Byte[] ClientPK, Boolean ClearKey = false)
+        {
+            SodiumKeyExchangeSharedSecretIntPtrBox MyBox = CalculateServerSharedSecret(ClientPK, ServerKP.GetPrivateKey(), ServerPK, false);
+            if (ClearKey)
+            {
+                ServerKP.Clear();
+            }
+            return MyBox;
         }
 
         public static SodiumKeyExchangeSharedSecretIntPtrBox CalculateServerSharedSecret(Byte[] ServerPK, IntPtr ServerSK, Byte[] ClientPK, Boolean ClearKey=false)

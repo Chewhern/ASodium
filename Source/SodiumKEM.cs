@@ -240,6 +240,16 @@ namespace ASodium
             return SharedSecret;
         }
 
+        public static IntPtr DecapsulateSharedSecret(Byte[] CipherText, KeyPair KEMKP, Boolean ClearKey = false) 
+        {
+            IntPtr SharedSecretIntPtr = DecapsulateSharedSecret(CipherText, KEMKP.GetPrivateKey(), false);
+            if (ClearKey) 
+            {
+                KEMKP.Clear();
+            }
+            return SharedSecretIntPtr;
+        }
+
         public static IntPtr DecapsulateSharedSecret(Byte[] CipherText, IntPtr PrivateKey, Boolean ClearKey = false)
         {
             if (CipherText == null)

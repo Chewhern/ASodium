@@ -148,6 +148,13 @@ namespace ASodium
             return PublicKey;
         }
 
+        public static Byte[] GeneratePublicKey(KeyPair X25519KP, Boolean ClearKey = false)
+        {
+            Byte[] PublicKey = SodiumScalarMult.Base(X25519KP, ClearKey);
+
+            return PublicKey;
+        }
+
         public static Byte[] GeneratePublicKey(IntPtr SecretKey, Boolean ClearKey = false)
         {
             Byte[] PublicKey = SodiumScalarMult.Base(SecretKey, ClearKey);
@@ -158,6 +165,13 @@ namespace ASodium
         public static Byte[] GenerateSharedSecret(Byte[] CurrentUserSecretKey, Byte[] OtherUserPublicKey, Boolean ClearKey = false)
         {
             Byte[] SharedSecret = SodiumScalarMult.Mult(CurrentUserSecretKey, OtherUserPublicKey, ClearKey);
+
+            return SharedSecret;
+        }
+
+        public static IntPtr GenerateSharedSecretIntPtr(KeyPair X25519KP, Byte[] OtherUserPublicKey, Boolean ClearKey = false)
+        {
+            IntPtr SharedSecret = SodiumScalarMult.Mult(X25519KP, OtherUserPublicKey, ClearKey);
 
             return SharedSecret;
         }
@@ -191,6 +205,18 @@ namespace ASodium
 
             if (ret != 0)
                 throw new CryptographicException("Failed to create PublicKeyBox");
+
+            return CipherText;
+        }
+
+        public static Byte[] Create(Byte[] Message, Byte[] Nonce, KeyPair X25519KP, Byte[] OtherUserPublicKey, Boolean ClearKey = false)
+        {
+            Byte[] CipherText = Create(Message, Nonce, X25519KP.GetPrivateKey(), OtherUserPublicKey, false);
+
+            if (ClearKey)
+            {
+                X25519KP.Clear();
+            }
 
             return CipherText;
         }
@@ -269,6 +295,18 @@ namespace ASodium
             if (ClearKey == true)
             {
                 SodiumSecureMemory.SecureClearBytes(CurrentUserSecretKey);
+            }
+
+            return Message;
+        }
+
+        public static Byte[] Open(Byte[] CipherText, Byte[] Nonce, KeyPair X25519KP, Byte[] OtherUserPublicKey, Boolean ClearKey = false)
+        {
+            Byte[] Message = Open(CipherText, Nonce, X25519KP.GetPrivateKey(), OtherUserPublicKey, false);
+
+            if (ClearKey)
+            {
+                X25519KP.Clear();
             }
 
             return Message;
@@ -360,6 +398,18 @@ namespace ASodium
             return MyDetachedBox;
         }
 
+        public static DetachedBox CreateDetached(Byte[] Message, Byte[] Nonce, KeyPair X25519KP, Byte[] OtherUserPublicKey, Boolean ClearKey = false)
+        {
+            DetachedBox MyBox = CreateDetached(Message, Nonce, X25519KP.GetPrivateKey(), OtherUserPublicKey, false);
+
+            if (ClearKey)
+            {
+                X25519KP.Clear();
+            }
+
+            return MyBox;
+        }
+
         public static DetachedBox CreateDetached(Byte[] Message, Byte[] Nonce, IntPtr CurrentUserSecretKey, Byte[] OtherUserPublicKey, Boolean ClearKey = false)
         {
             DetachedBox MyDetachedBox = new DetachedBox();
@@ -417,6 +467,18 @@ namespace ASodium
             if (ClearKey == true)
             {
                 SodiumSecureMemory.SecureClearBytes(CurrentUserSecretKey);
+            }
+
+            return Message;
+        }
+
+        public static byte[] OpenDetached(Byte[] CipherText, Byte[] MAC, Byte[] Nonce, KeyPair X25519KP, Byte[] OtherUserPublicKey, Boolean ClearKey = false)
+        {
+            Byte[] Message = OpenDetached(CipherText, MAC, Nonce, X25519KP.GetPrivateKey(), OtherUserPublicKey, false);
+
+            if (ClearKey)
+            {
+                X25519KP.Clear();
             }
 
             return Message;

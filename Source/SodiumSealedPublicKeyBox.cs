@@ -92,6 +92,18 @@ namespace ASodium
             return Message;
         }
 
+        public static Byte[] Open(Byte[] CipherText, Byte[] CurrentUserPublicKey, KeyPair X25519KP, Boolean ClearKey = false)
+        {
+            Byte[] Message = Open(CipherText, CurrentUserPublicKey, X25519KP.GetPrivateKey(), false);
+
+            if (ClearKey) 
+            {
+                X25519KP.Clear();
+            }
+
+            return Message;
+        }
+
         public static Byte[] Open(Byte[] CipherText, Byte[] CurrentUserPublicKey, IntPtr CurrentUserSecretKey, Boolean ClearKey = false)
         {
             if (CipherText == null)

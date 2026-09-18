@@ -35,6 +35,18 @@ namespace ASodium
             return PublicKey;
         }
 
+        public static Byte[] Base(KeyPair CurrentUserX25519KP, Boolean ClearKey = false) 
+        {
+            Byte[] PublicKey = Base(CurrentUserX25519KP.GetPrivateKey(), false);
+
+            if (ClearKey) 
+            {
+                CurrentUserX25519KP.Clear();
+            }
+
+            return PublicKey;
+        }
+
         public static Byte[] Base(IntPtr CurrentUserSecretKey, Boolean ClearKey = false)
         {
             if (CurrentUserSecretKey == IntPtr.Zero) 
@@ -74,6 +86,18 @@ namespace ASodium
             }
 
             return SharedSecret;
+        }
+
+        public static IntPtr Mult(KeyPair CurrentUserX25519KP, Byte[] OtherUserPublicKey, Boolean ClearKey = false) 
+        {
+            IntPtr SharedSecretIntPtr = Mult(CurrentUserX25519KP.GetPrivateKey(), OtherUserPublicKey, false);
+
+            if (ClearKey) 
+            {
+                CurrentUserX25519KP.Clear();
+            }
+
+            return SharedSecretIntPtr;
         }
 
         public static IntPtr Mult(IntPtr CurrentUserSecretKey, Byte[] OtherUserPublicKey, Boolean ClearKey = false)

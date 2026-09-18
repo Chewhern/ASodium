@@ -63,6 +63,16 @@ namespace ASodium
             return X25519SK;
         }
 
+        public static IntPtr ConverDSASKToDHSKIntPtr(KeyPair ED25519KP,Boolean ClearKey = false) 
+        {
+            IntPtr DSASKIntPtr = ConvertDSASKToDHSKIntPtr(ED25519KP.GetPrivateKey(), false);
+            if (ClearKey) 
+            {
+                ED25519KP.Clear();
+            }
+            return DSASKIntPtr;
+        }
+
         public static IntPtr ConvertDSASKToDHSKIntPtr(IntPtr ED25519SK,Boolean ClearKey=false)
         {
             if (ED25519SK == IntPtr.Zero)

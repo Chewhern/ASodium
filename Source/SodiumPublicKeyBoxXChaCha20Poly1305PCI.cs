@@ -54,6 +54,18 @@ namespace ASodium
             return SharedSecret;
         }
 
+        public static IntPtr CalculateSharedSecret(Byte[] OtherUserPublicKey, KeyPair CurrentUserX25519KP, Boolean ClearKey = false) 
+        {
+            IntPtr SharedSecretIntPtr = CalculateSharedSecret(OtherUserPublicKey, CurrentUserX25519KP.GetPrivateKey(), false);
+
+            if (ClearKey) 
+            {
+                CurrentUserX25519KP.Clear();
+            }
+
+            return SharedSecretIntPtr;
+        }
+
         public static IntPtr CalculateSharedSecret(Byte[] OtherUserPublicKey, IntPtr CurrentUserPrivateKey, Boolean ClearKey = false)
         {
             if (OtherUserPublicKey == null)

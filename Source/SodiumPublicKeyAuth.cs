@@ -156,6 +156,16 @@ namespace ASodium
             return SignatureMessage;
         }
 
+        public static Byte[] Sign(Byte[] Message, KeyPair ED25519KP, Boolean ClearKey = false) 
+        {
+            Byte[] SignatureMessage = Sign(Message, ED25519KP.GetPrivateKey(), false);
+            if (ClearKey) 
+            {
+                ED25519KP.Clear();
+            }
+            return SignatureMessage;
+        }
+
         public static Byte[] Sign(Byte[] Message, IntPtr SecretKey, Boolean ClearKey = false)
         {
             if (Message == null)
@@ -257,6 +267,17 @@ namespace ASodium
                 SodiumSecureMemory.SecureClearBytes(SecretKey);
             }
 
+            return Signature;
+        }
+
+        public static Byte[] SignDetached(Byte[] Message, KeyPair ED25519KP, Boolean ClearKey = false) 
+        {
+            Byte[] Signature = SignDetached(Message, ED25519KP.GetPrivateKey(), false);
+            
+            if (ClearKey) 
+            {
+                ED25519KP.Clear();
+            }
             return Signature;
         }
 
@@ -366,6 +387,18 @@ namespace ASodium
             return PublicKey;
         }
 
+        public static Byte[] GeneratePublicKey(KeyPair ED25519KP, Boolean ClearKey = false) 
+        {
+            Byte[] PublicKeyBytes = GeneratePublicKey(ED25519KP.GetPrivateKey(), false);
+
+            if (ClearKey) 
+            {
+                ED25519KP.Clear();
+            }
+
+            return PublicKeyBytes;
+        }
+
         public static Byte[] GeneratePublicKey(IntPtr SecretKey, Boolean ClearKey = false)
         {
             if (SecretKey == IntPtr.Zero)
@@ -422,6 +455,18 @@ namespace ASodium
             }
 
             return Seed;
+        }
+
+        public static IntPtr ExtractSeedIntPtr(KeyPair ED25519KP, Boolean ClearKey = false) 
+        {
+            IntPtr SeedIntPtr = ExtractSeedIntPtr(ED25519KP.GetPrivateKey(), false);
+
+            if (ClearKey) 
+            {
+                ED25519KP.Clear();
+            }
+
+            return SeedIntPtr;
         }
 
         public static IntPtr ExtractSeedIntPtr(IntPtr SecretKey, Boolean ClearKey = false) 

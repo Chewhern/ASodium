@@ -74,6 +74,18 @@ namespace ASodium
             return Signature;
         }
 
+        public static Byte[] SignFinalState(Byte[] State, KeyPair ED25519KP, Boolean ClearKey = false) 
+        {
+            Byte[] Signature = SignFinalState(State, ED25519KP.GetPrivateKey(), false);
+
+            if (ClearKey) 
+            {
+                ED25519KP.Clear();
+            }
+
+            return Signature;
+        }
+
         public static Byte[] SignFinalState(Byte[] State, IntPtr SecretKey, Boolean ClearKey = false)
         {
             Byte[] Signature = new Byte[SodiumPublicKeyAuth.GetSignatureBytesLength()];

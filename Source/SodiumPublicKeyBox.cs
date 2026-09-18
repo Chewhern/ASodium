@@ -22,7 +22,6 @@ namespace ASodium
             return SodiumPublicKeyBoxLibrary.crypto_box_secretkeybytes();
         }
 
-
         public static int GetNonceBytesLength() 
         {
             return SodiumPublicKeyBoxLibrary.crypto_box_noncebytes();
@@ -148,6 +147,13 @@ namespace ASodium
             return PublicKey;
         }
 
+        public static Byte[] GeneratePublicKey(KeyPair X25519KP, Boolean ClearKey = false) 
+        {
+            Byte[] PublicKey = SodiumScalarMult.Base(X25519KP, ClearKey);
+
+            return PublicKey;
+        }
+
         public static Byte[] GeneratePublicKey(IntPtr SecretKey, Boolean ClearKey = false)
         {
             Byte[] PublicKey = SodiumScalarMult.Base(SecretKey, ClearKey);
@@ -158,6 +164,13 @@ namespace ASodium
         public static Byte[] GenerateSharedSecret(Byte[] CurrentUserSecretKey,Byte[] OtherUserPublicKey,Boolean ClearKey = false) 
         {
             Byte[] SharedSecret = SodiumScalarMult.Mult(CurrentUserSecretKey, OtherUserPublicKey, ClearKey);
+
+            return SharedSecret;
+        }
+
+        public static IntPtr GenerateSharedSecretIntPtr(KeyPair X25519KP, Byte[] OtherUserPublicKey, Boolean ClearKey = false)
+        {
+            IntPtr SharedSecret = SodiumScalarMult.Mult(X25519KP, OtherUserPublicKey, ClearKey);
 
             return SharedSecret;
         }
@@ -195,6 +208,19 @@ namespace ASodium
             return CipherText;
         }
 
+        public static Byte[] Create(Byte[] Message, Byte[] Nonce, KeyPair X25519KP, Byte[] OtherUserPublicKey, Boolean ClearKey = false) 
+        {
+            Byte[] CipherText = Create(Message, Nonce, X25519KP.GetPrivateKey(), OtherUserPublicKey, false);
+
+            if (ClearKey) 
+            {
+                X25519KP.Clear();
+            }
+
+            return CipherText;
+        }
+
+
         public static Byte[] Create(Byte[] Message, Byte[] Nonce, IntPtr CurrentUserSecretKey, Byte[] OtherUserPublicKey, Boolean ClearKey = false)
         {
             if (CurrentUserSecretKey == IntPtr.Zero)
@@ -222,6 +248,72 @@ namespace ASodium
                 throw new CryptographicException("Failed to create PublicKeyBox");
 
             return CipherText;
+        }
+
+        public static Byte[] Open(Byte[] CipherText, Byte[] Nonce, Byte[] CurrentUserSecretKey, Byte[] OtherUserPublicKey, Boolean ClearKey = false)
+        {
+            if (CurrentUserSecretKey == null)
+                throw new ArgumentException("Error: Secret key must not be null/empty");
+
+            if (CurrentUserSecretKey.Length != GetSecretKeyBytesLength())
+                throw new ArgumentException("Error: Secret key's length must be " + GetSecretKeyBytesLength() + " bytes");
+
+            if (OtherUserPublicKey == null || OtherUserPublicKey.Length != GetPublicKeyBytesLength())
+                throw new ArgumentException("Error: Public key must be " + GetPublicKeyBytesLength() + " bytes in length");
+
+            if (Nonce == null || Nonce.Length != GetNonceBytesLength())
+                throw new ArgumentException("Error: Nonce must be " + GetNonceBytesLength() + " bytes in length");
+
+            //check to see if there are MAC_BYTES of leading nulls, if so, trim.
+            //this is required due to an error in older versions.
+            if (CipherText[0] == 0)
+            {
+                //check to see if trim is needed
+                var trim = true;
+                for (var i = 0; i < GetMACBytesLength() - 1; i++)
+                {
+                    if (CipherText[i] != 0)
+                    {
+                        trim = false;
+                        break;
+                    }
+                }
+
+                //if the leading MAC_BYTES are null, trim it off before going on.
+                if (trim)
+                {
+                    var temp = new Byte[CipherText.Length - GetMACBytesLength()];
+                    Array.Copy(CipherText, GetMACBytesLength(), temp, 0, CipherText.Length - GetMACBytesLength());
+
+                    CipherText = temp;
+                }
+            }
+
+            Byte[] Message = new Byte[CipherText.Length - GetMACBytesLength()];
+
+            int ret = SodiumPublicKeyBoxLibrary.crypto_box_open_easy(Message, CipherText, CipherText.Length, Nonce, OtherUserPublicKey, CurrentUserSecretKey);
+
+            if (ret != 0)
+                throw new CryptographicException("Failed to open PublicKeyBox");
+
+            if (ClearKey == true)
+            {
+                SodiumSecureMemory.SecureClearBytes(CurrentUserSecretKey);
+            }
+
+            return Message;
+        }
+
+        public static Byte[] Open(Byte[] CipherText, Byte[] Nonce, KeyPair X25519KP, Byte[] OtherUserPublicKey, Boolean ClearKey = false)
+        {
+            Byte[] Message = Open(CipherText,Nonce,X25519KP.GetPrivateKey(),OtherUserPublicKey,false);
+
+            if (ClearKey) 
+            {
+                X25519KP.Clear();
+            }
+
+            return Message;
         }
 
         public static Byte[] Open(Byte[] CipherText, Byte[] Nonce, IntPtr CurrentUserSecretKey, Byte[] OtherUserPublicKey,Boolean ClearKey=false)
@@ -310,6 +402,18 @@ namespace ASodium
             return MyDetachedBox;
         }
 
+        public static DetachedBox CreateDetached(Byte[] Message, Byte[] Nonce, KeyPair X25519KP, Byte[] OtherUserPublicKey, Boolean ClearKey = false)
+        {
+            DetachedBox MyBox = CreateDetached(Message, Nonce, X25519KP.GetPrivateKey(), OtherUserPublicKey, false);
+
+            if (ClearKey) 
+            {
+                X25519KP.Clear();
+            }
+
+            return MyBox;
+        }
+
         public static DetachedBox CreateDetached(Byte[] Message, Byte[] Nonce, IntPtr CurrentUserSecretKey, Byte[] OtherUserPublicKey, Boolean ClearKey = false)
         {
             DetachedBox MyDetachedBox = new DetachedBox();
@@ -367,6 +471,18 @@ namespace ASodium
             if (ClearKey == true)
             {
                 SodiumSecureMemory.SecureClearBytes(CurrentUserSecretKey);
+            }
+
+            return Message;
+        }
+
+        public static byte[] OpenDetached(Byte[] CipherText, Byte[] MAC, Byte[] Nonce, KeyPair X25519KP, Byte[] OtherUserPublicKey, Boolean ClearKey = false)
+        {
+            Byte[] Message = OpenDetached(CipherText, MAC, Nonce, X25519KP.GetPrivateKey(), OtherUserPublicKey, false);
+
+            if (ClearKey) 
+            {
+                X25519KP.Clear();
             }
 
             return Message;
