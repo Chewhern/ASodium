@@ -69,7 +69,7 @@ namespace ASodium
             Boolean IsZero = false;
             Boolean IsZero2 = false;
             IntPtr PrivateKey = SodiumGuardedHeapAllocation.Sodium_Malloc(ref IsZero, GetPrivateKeyBytesLength());
-            IntPtr PublicKey = SodiumGuardedHeapAllocation.Sodium_Malloc(ref IsZero, GetPublicKeyBytesLength());
+            IntPtr PublicKey = SodiumGuardedHeapAllocation.Sodium_Malloc(ref IsZero2, GetPublicKeyBytesLength());
             KeyPair MyKeyPair;
             if (IsZero == true && IsZero2 == true)
             {
@@ -108,7 +108,7 @@ namespace ASodium
             Boolean IsZero = false;
             Boolean IsZero2 = false;
             IntPtr PrivateKey = SodiumGuardedHeapAllocation.Sodium_Malloc(ref IsZero, GetPrivateKeyBytesLength());
-            IntPtr PublicKey = SodiumGuardedHeapAllocation.Sodium_Malloc(ref IsZero, GetPublicKeyBytesLength());
+            IntPtr PublicKey = SodiumGuardedHeapAllocation.Sodium_Malloc(ref IsZero2, GetPublicKeyBytesLength());
             KeyPair MyKeyPair;
             if (IsZero == true && IsZero2 == true)
             {

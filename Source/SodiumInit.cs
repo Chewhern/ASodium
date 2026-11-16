@@ -1,4 +1,5 @@
 ﻿using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 
 namespace ASodium
 {
@@ -22,10 +23,13 @@ namespace ASodium
         {
             if (!_isInit)
             {
-                #if NET472
-                    SetEnvironmentVariableHelper.SetEnvironmentVariable();
-                #endif
-                SodiumInitLibrary.sodium_init();
+                int result = SodiumInitLibrary.sodium_init();
+
+                if (result < 0)
+                {
+                    throw new CryptographicException(
+                        "libsodium initialization failed.");
+                }
                 _isInit = true;
             }
         }

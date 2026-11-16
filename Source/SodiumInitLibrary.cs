@@ -12,7 +12,7 @@ namespace ASodium
         #endif
 
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern void sodium_init();
+        internal static extern int sodium_init();
 
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
         internal static extern IntPtr sodium_version_string();

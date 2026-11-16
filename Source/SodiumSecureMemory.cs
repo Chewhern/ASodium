@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace ASodium
 {
@@ -51,11 +50,18 @@ namespace ASodium
 
         public static void SecureClearString(String Source)
         {
-            Byte[] SourceBytes = Encoding.UTF8.GetBytes(Source);
             GCHandle MyGeneralGCHandle = GCHandle.Alloc(Source, GCHandleType.Pinned);
-            MemZero(MyGeneralGCHandle.AddrOfPinnedObject(), SourceBytes.LongLength);
-            MyGeneralGCHandle.Free();
-            SecureClearBytes(SourceBytes);
+
+            try
+            {
+                MemZero(
+                    MyGeneralGCHandle.AddrOfPinnedObject(),
+                    (long)Source.Length * sizeof(Char));
+            }
+            finally
+            {
+                MyGeneralGCHandle.Free();
+            }
         }
     }
 }
