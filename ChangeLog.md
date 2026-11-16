@@ -103,6 +103,11 @@
 - **```SodiumConvertDSAToDH,SodiumKEM,SodiumKEMXWing,SodiumKeyExchange,SodiumMLKEM768,SodiumPublicKeyAuth,SodiumPublicKeyAuthMPM,SodiumPublicKeyBox,SodiumPublicKeyBoxPCI,SodiumPublicKeyBoxXChaCha20Poly1305,SodiumPublicKeyBoxXChaCha20Poly1305PCI,SodiumScalarMult,SodiumSealedPublicKeyBox,SodiumSealedPublicKeyBoxXChaCha20Poly1305```** added **KeyPair** helper methods within them to help further reduce development mistakes.
 - **SodiumPublicKeyBox** added a **Byte[]** variant for **Open** method.
 
+0.6.9 version
+- Three **SodiumKEM** implementations had fixed minor bugs in generation of key pairs using **KeyPair**.
+- **SodiumSecureMemory.SecureClearString()** had changed its underlying source code to make it fit UTF16 which is the default byte size for a C# String object.
+- **SodiumInit** and its library had been corrected slightly.
+
 ## Note(For 0.6.4 and above) - Memory Lock and Swap Partitions
 Swap partition generally is required when involving with small RAM amount (Eg, 512 MB with 1 GB swap partition particularly on Linux operating system. Windows and MacOS might not be affected by this by default as they have bigger RAM. ). However, this's not a good idea for cryptographic security as the private key or data may be leaked as the operating system will write and read data from swap partitions.
 
